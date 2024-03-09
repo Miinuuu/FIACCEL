@@ -27,8 +27,17 @@ fiaccel is trained on a proprietary dataset with one million internet video clip
 
 ## FIACCEL: Implementation details
 
+##TOP
 <p align='center'>
     <img src="fig/FIACCEL_HW.png" width="500" center>
+</p>
+
+##Core
+<p align='center'>
     <img src="fig/Core.png" width="500" center>
+</p>
+
+##NOC
+<p align='center'>
     <img src="fig/NOC.png" width="500" center>
 </p>
