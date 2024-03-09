@@ -1,0 +1,91 @@
+experiment_name: FIACCEL
+seed: 202208
+mode : int
+ngpu: 2
+num_workers_per_task: 10
+
+user: ${oc.env:USER} # oc=omegaconf
+folder_dir: checkpoints_int
+defaults:
+  - _self_
+  - flow_estimation: int
+  - datamodule: vimeo
+  - optim: adamw
+  - scheduler: linearwarmupcosine 
+  - test_datamodule:  # by default, no testing at the end of training
+
+model:
+  _target_: model_pipeline.FIACCELPipeline
+  flow_estimation: ${flow_estimation}
+
+training_loop:
+  learning_rate: 2e-4
+  lr_annealing_frequency: ${checkpoint.callback.every_n_train_steps}
+  train_batch_size: 16
+  val_batch_size: 1
+  pseudo_epochs: ${eval:${trainer.max_steps}//${training_loop.lr_annealing_frequency}} 
+
+# logging configs
+checkpoint:
+  overwrite: True # overwrite logs already in training dir
+  resume_training: False # resume training from previous logs
+  callback: # passed to PyTorch Lightning's ModelCheckpoint callback
+    dirpath: /data2/jmw/fiaccel/${folder_dir}
+    save_top_k: 2
+    monitor: val_PSNR
+    mode: min
+    save_last: True
+    every_n_train_steps: 2000 # also equals annealing freq and val evaluation
+
+
+# These args are passed to the PyTorch Lightning Trainer - add extra customization here
+trainer: 
+  # Steps, dev runs etc 
+  fast_dev_run: False # Default=False; if int runs n steps of train/val ~ unit test debugging
+  max_steps: 1_000_000
+  log_every_n_steps: 100   # default=50
+  # ---
+  # Validation: validate every time checkpoint is stored
+  val_check_interval: ${checkpoint.callback.every_n_train_steps} # default is 1.0
+  check_val_every_n_epoch: # None = disable epoch validation, validate every <val_check_interval> steps 
+  limit_val_batches:     # Use <limit_val_batches> instead of the whole validation set
+  # ---
+  # Devices
+  devices: ${ngpu}  
+  #devices: [1,2] 
+  accelerator: gpu 
+  strategy: ddp_find_unused_parameters_false
+  #strategy: ddp_find_unused_parameters_true
+  # ---
+  # Misc
+  gradient_clip_val: 1.0
+  gradient_clip_algorithm: norm
+  #profiler : "simple" #off None advanced
+  #precision : "16-mixed" 
+  #precision : "bf16-mixed"
+  #precision : "16-true"
+  #precision : "bf16-true"
+  enable_model_summary : True
+  use_distributed_sampler : True
+
+tester:
+  accelerator: gpu 
+  devices: 1
+
+logger: 
+  entity: 
+  project: ${experiment_name}_${mode}
+  group: dev
+
+hydra:
+  run:
+    dir: /data2/jmw/fiaccel
+  sweep:
+    dir: ???
+  job:
+    config:
+      override_dirname:
+        exclude_keys:
+          - mode
+          - experiment_name
+          - hydra.launcher.timeout_min
