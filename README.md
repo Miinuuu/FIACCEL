@@ -1,4 +1,4 @@
-# Reproducing FIACCEL in PyTorch
+# FIACCEL in PyTorch
 
 ## Introduction
 This is a PyTorch implementation of the FIACCEL
