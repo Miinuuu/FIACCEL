@@ -1,0 +1,8 @@
+__pycache__
+.vscode
+lightning_logs
+wandb_logs
+outputs
+*.ipynb
+checkpoints_float
+checkpoints_int

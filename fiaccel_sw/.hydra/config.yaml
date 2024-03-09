@@ -1,0 +1,73 @@
+experiment_name: FIACCEL
+seed: 202208
+mode: int
+ngpu: 2
+num_workers_per_task: 10
+user: ${oc.env:USER}
+folder_dir: checkpoints_int
+model:
+  _target_: model_pipeline.FIACCELPipeline
+  flow_estimation: ${flow_estimation}
+training_loop:
+  learning_rate: 0.0002
+  lr_annealing_frequency: ${checkpoint.callback.every_n_train_steps}
+  train_batch_size: 16
+  val_batch_size: 1
+  pseudo_epochs: ${eval:${trainer.max_steps}//${training_loop.lr_annealing_frequency}}
+checkpoint:
+  overwrite: true
+  resume_training: false
+  callback:
+    dirpath: /data2/jmw/fiaccel/${folder_dir}
+    save_top_k: 2
+    monitor: val_PSNR
+    mode: min
+    save_last: true
+    every_n_train_steps: 2000
+trainer:
+  fast_dev_run: false
+  max_steps: 1000000
+  log_every_n_steps: 100
+  val_check_interval: ${checkpoint.callback.every_n_train_steps}
+  check_val_every_n_epoch: null
+  limit_val_batches: 100
+  devices: ${ngpu}
+  accelerator: gpu
+  strategy: ddp_find_unused_parameters_false
+  gradient_clip_val: 1.0
+  gradient_clip_algorithm: norm
+  enable_model_summary: true
+  use_distributed_sampler: true
+tester:
+  accelerator: gpu
+  devices: 1
+logger:
+  entity: null
+  project: ${experiment_name}_${mode}
+  group: dev
+flow_estimation:
+  _target_: neural.flow_estimation.flow_estimation_int
+  depths:
+  - 8
+  - 16
+  - 32
+  - 64
+  - 32
+  - 16
+  - 8
+datamodule:
+  _target_: datamodules.vimeo.VimeoDataModule
+  data_dir: /data/dataset/vimeo_dataset/vimeo_triplet/
+  train_batch_size: ${training_loop.train_batch_size}
+  val_batch_size: ${training_loop.val_batch_size}
+  num_workers: ${num_workers_per_task}
+  name: Vimeo90kTriplet
+optim:
+  _target_: torch.optim.AdamW
+  lr: ${training_loop.learning_rate}
+  weight_decay: 0.0001
+scheduler:
+  _target_: utils.schedulers.LinearWarmUpCosineLR
+  ramp_len: ${eval:${training_loop.pseudo_epochs}//20}
+  T_max: ${training_loop.pseudo_epochs}
+  eta_min: ${eval:${training_loop.learning_rate}//10}
