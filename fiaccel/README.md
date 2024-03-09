@@ -4,7 +4,7 @@
 This is a PyTorch implementation of the FIACCEL
 
 <p align='center'>
-    <img src="fig/psnr.png" width="500" center>
+    <img src="fig/val_psnr.png" width="500" center>
 </p>
 
 ## Running the code
@@ -18,7 +18,6 @@ conda activate fiaccel
 ```
 You can train a model with `model_train.py` but remember to modify the the training configuration (`config/train_config_*.yaml`) and include paths to an appropriate training dataset.
 
-## FIACCEL: Implementation details
 
 ### Training data
 
@@ -26,3 +25,10 @@ fiaccel is trained on a proprietary dataset with one million internet video clip
 
 - We use the publcicly available Vimeo-90k dataset ([Xue et al., 2019](https://arxiv.org/abs/1711.09078)), which is commonly used dataset for video frame interpolation
 
+## FIACCEL: Implementation details
+
+<p align='center'>
+    <img src="fig/FIACCEL_HW.png" width="500" center>
+    <img src="fig/Core.png" width="500" center>
+    <img src="fig/NOC.png" width="500" center>
+</p>
