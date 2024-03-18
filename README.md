@@ -34,15 +34,20 @@ fiaccel is trained on a proprietary dataset with one million internet video clip
 
 ## Core
 <p align='center'>
-    <img src="fig/Core.png" width="500" center>
+    <img src="fig/Core.png" width="500" >
+</p>
+
+## Frame Synthesizer
+<p align='center'>
+    <img src="fig/Core.png" width="500" >
 </p>
 
 ## Experimental_settings
 <p align="center">
-  <img src="fig/experimental_settings.png" width="500" center>>
+  <img src="fig/experimental_settings.png" width="500" >>
 </p>
 
 ## video_screenshot
 <p align="center">
-  <img src="fig/video_screenshot.png" width="500" center>>
+  <img src="fig/video_screenshot.png" width="500" >>
 </p>
