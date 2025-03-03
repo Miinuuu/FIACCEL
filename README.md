@@ -31,7 +31,10 @@ fiaccel is trained on a proprietary dataset with one million internet video clip
 <p align='center'>
     <img src="fig/FIACCEL_HW.png" width="1000" center>
 </p>
-
+## TOP_SUB
+<p align='center'>
+    <img src="fig/TOP_SUB_FI.png" width="1000" center>
+</p>
 ## Ecore
 <p align='center'>
     <img src="fig/Ecore.png" width="1000" >
