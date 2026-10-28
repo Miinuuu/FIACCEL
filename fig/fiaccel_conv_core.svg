@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="565" viewBox="0 0 1700 565" role="img" aria-labelledby="title desc"><title id="title">FIACCEL convolution core</title><desc id="desc">Loader, feature and weight buffers, fetcher, MAC lanes, reduction, partial sums, shift quantization and activation. Layout follows Figure 2(b).</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#688096"/></marker></defs><rect width="1700" height="565" rx="18" fill="white"/>
+<text x="42" y="47" text-anchor="start" font-family="DejaVu Sans,Arial,sans-serif" font-size="25" font-weight="700" fill="#21364b">FIACCEL  /  CONVOLUTION CORE</text>
+<text x="42" y="78" text-anchor="start" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="400" fill="#65788a">Figure 2(b) structure · functional RTL blocks</text>
+<rect x="40" y="132" width="190" height="410" rx="12" fill="#fbfcfe" stroke="#b8c9d7" stroke-width="1.5"/>
+<text x="58" y="163" text-anchor="start" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="700" fill="#21364b">LOADER</text>
+<rect x="265" y="132" width="220" height="410" rx="12" fill="#fbfcfe" stroke="#b8c9d7" stroke-width="1.5"/>
+<text x="283" y="163" text-anchor="start" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="700" fill="#21364b">FM / WT BUFFERS</text>
+<rect x="525" y="132" width="205" height="410" rx="12" fill="#fbfcfe" stroke="#b8c9d7" stroke-width="1.5"/>
+<text x="543" y="163" text-anchor="start" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="700" fill="#21364b">FETCHER</text>
+<rect x="770" y="132" width="880" height="410" rx="12" fill="#fbfcfe" stroke="#b8c9d7" stroke-width="1.5"/>
+<text x="788" y="163" text-anchor="start" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="700" fill="#21364b">MACs + OUTPUT</text>
+<rect x="61" y="191" width="148" height="68" rx="8" fill="#f0f8fc" stroke="#178dc8" stroke-width="1.5"/>
+<text x="135.0" y="225.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">READ</text>
+<text x="135.0" y="250.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400" fill="#65788a">Input / config</text>
+<rect x="61" y="307" width="148" height="68" rx="8" fill="#f0f8fc" stroke="#178dc8" stroke-width="1.5"/>
+<text x="135.0" y="347.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">FM loader</text>
+<rect x="61" y="405" width="148" height="72" rx="8" fill="#f1f4f7" stroke="#8296a9" stroke-width="1.5"/>
+<text x="135.0" y="441.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">Sequence ctrl</text>
+<text x="135.0" y="466.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400" fill="#65788a">Update + status</text>
+<polyline points="135,259 135,307" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="135,405 135,375" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="6 5"/>
+<polyline points="209,341 280,341" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="280,307 280,436" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="280,307 299,307" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="280,350 299,350" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="280,393 299,393" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="280,436 299,436" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="209,225 287,225" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="287" y="191" width="176" height="68" rx="8" fill="#fff6e7" stroke="#dc9b46" stroke-width="1.5"/>
+<text x="375.0" y="221.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">WT buffer</text>
+<text x="375.0" y="246.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400" fill="#65788a">Resident coefficients</text>
+<rect x="299" y="290" width="152" height="34" rx="4" fill="#e8f1fa" stroke="#9bb5cd" stroke-width="1.5"/>
+<text x="375" y="313" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="400" fill="#26384b">FM bank 0</text>
+<rect x="299" y="333" width="152" height="34" rx="4" fill="#e8f1fa" stroke="#9bb5cd" stroke-width="1.5"/>
+<text x="375" y="356" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="400" fill="#26384b">FM bank 1</text>
+<rect x="299" y="376" width="152" height="34" rx="4" fill="#e8f1fa" stroke="#9bb5cd" stroke-width="1.5"/>
+<text x="375" y="399" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="400" fill="#26384b">⋮</text>
+<rect x="299" y="419" width="152" height="34" rx="4" fill="#e8f1fa" stroke="#9bb5cd" stroke-width="1.5"/>
+<text x="375" y="442" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="400" fill="#26384b">FM bank N</text>
+<text x="375" y="491" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400" fill="#65788a">Banked row storage</text>
+<rect x="546" y="195" width="163" height="60" rx="8" fill="#fff6e7" stroke="#dc9b46" stroke-width="1.5"/>
+<text x="627.5" y="231.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">WT holder</text>
+<rect x="546" y="311" width="163" height="60" rx="8" fill="#f0f8fc" stroke="#178dc8" stroke-width="1.5"/>
+<text x="627.5" y="347.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">FM holder</text>
+<rect x="546" y="415" width="163" height="72" rx="8" fill="#f1f4f7" stroke="#8296a9" stroke-width="1.5"/>
+<text x="627.5" y="451.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">Sequence ctrl</text>
+<text x="627.5" y="476.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400" fill="#65788a">Kernel cols (Pc)</text>
+<polyline points="463,225 546,225" fill="none" stroke="#dc9b46" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="451,307 470,307" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="451,350 470,350" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="451,393 470,393" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="451,436 470,436" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="470,307 470,436" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="470,341 546,341" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="628,415 628,371" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="6 5"/>
+<text x="862" y="205" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="600" fill="#21364b">MAC LANES</text>
+<circle cx="862" cy="270" r="22" fill="#e9f3fb" stroke="#178dc8" stroke-width="1.5"/>
+<text x="862" y="277" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="27" font-weight="400" fill="#178dc8">×</text>
+<circle cx="862" cy="332" r="22" fill="#e9f3fb" stroke="#178dc8" stroke-width="1.5"/>
+<text x="862" y="339" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="27" font-weight="400" fill="#178dc8">×</text>
+<circle cx="862" cy="394" r="22" fill="#e9f3fb" stroke="#178dc8" stroke-width="1.5"/>
+<text x="862" y="401" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="27" font-weight="400" fill="#178dc8">×</text>
+<polyline points="709,225 790,225 790,385" fill="none" stroke="#dc9b46" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="790,261 842,261" fill="none" stroke="#dc9b46" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="790,323 842,323" fill="none" stroke="#dc9b46" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="790,385 842,385" fill="none" stroke="#dc9b46" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="812,279 812,403" fill="none" stroke="#fbfcfe" stroke-width="8" stroke-linejoin="round"/>
+<polyline points="812,279 812,403" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="780,341 806,341" fill="none" stroke="#fbfcfe" stroke-width="8"/>
+<polyline points="709,341 812,341" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="812,279 842,279" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="812,341 842,341" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="812,403 842,403" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="884,270 918,270" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="884,332 918,332" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="884,394 918,394" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="918,270 918,394" fill="none" stroke="#178dc8" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="918,332 942,332" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="942" y="291" width="125" height="82" rx="8" fill="#f0f8fc" stroke="#178dc8" stroke-width="1.5"/>
+<text x="1004.5" y="332.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">Reduction</text>
+<text x="1004.5" y="357.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400" fill="#65788a">Adder tree</text>
+<polyline points="1067,332 1092,332" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="1092" y="291" width="104" height="82" rx="8" fill="#fff6e7" stroke="#dc9b46" stroke-width="1.5"/>
+<text x="1144.0" y="332.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">Psum</text>
+<text x="1144.0" y="357.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400" fill="#65788a">Accumulate</text>
+<polyline points="1196,332 1221,332" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="1221" y="291" width="112" height="82" rx="8" fill="#f2edf8" stroke="#755ab8" stroke-width="1.5"/>
+<text x="1277.0" y="332.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">Shift</text>
+<text x="1277.0" y="357.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400" fill="#65788a">Quantize</text>
+<polyline points="1333,332 1358,332" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="1358" y="291" width="108" height="82" rx="8" fill="#e9f5ef" stroke="#318d72" stroke-width="1.5"/>
+<text x="1412.0" y="332.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">Act.</text>
+<text x="1412.0" y="357.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400" fill="#65788a">Clamp</text>
+<polyline points="1466,332 1491,332" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="1491" y="291" width="135" height="82" rx="8" fill="#f0f8fc" stroke="#178dc8" stroke-width="1.5"/>
+<text x="1558.5" y="332.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#26384b">Output</text>
+<text x="1558.5" y="357.0" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400" fill="#65788a">Buffer / FIFO</text>
+<polyline points="1626,332 1676,332" fill="none" stroke="#688096" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1655" y="320" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="400" fill="#21364b">FM</text>
+<polyline points="1168,373 1168,405 1120,405 1120,373" fill="none" stroke="#dc9b46" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1355" y="205" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="400" fill="#65788a">Pm × Pe × Pf</text>
+<text x="862" y="456" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="400" fill="#65788a">Pn × Pr</text>
+</svg>

@@ -1,2 +1,3 @@
-_target_: neural.flow_estimation.flow_estimation_int
+_target_: model.flow_estimation.flow_estimation_int
 depths :  [8, 16, 32 , 64, 32 ,16 ,8]
+selective_transfer: true
