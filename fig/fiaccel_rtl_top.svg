@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="880" viewBox="0 0 1600 880" role="img" aria-labelledby="title desc">
+<title id="title">FIACCEL RTL architecture</title>
+<desc id="desc">Figure 2 datapath: a three-stage encoder, feature map reuse and selective transfer, a shared window feeding four horizontally dilated convolutions, pointwise shrink, three-stage decoder and three-channel motion and mask head. A registered credit pipeline feeds bounded-cache frame synthesis. Three AXI masters connect input and coefficient loading, feature history, and sample reads and RGB output to DDR. Logical architecture, not physical FPGA placement.</desc>
+<defs><linearGradient id="background" x2="1" y2="1"><stop stop-color="#101c30"/><stop offset="1" stop-color="#080f1c"/></linearGradient>
+<marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#8399b4"/></marker>
+<marker id="back" viewBox="0 0 8 8" refX="1" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M8 0L0 4L8 8Z" fill="#8399b4"/></marker></defs>
+<rect width="1600" height="880" rx="24" fill="url(#background)"/>
+<g font-family="DejaVu Sans,Arial,sans-serif">
+<text x="56" y="69" font-size="44" fill="#eff6ff" font-weight="750" text-anchor="start" letter-spacing="2">FIACCEL</text>
+<text x="286" y="68" font-size="25" fill="#abc0d8" font-weight="400" text-anchor="start" >Memory-efficient frame interpolation</text>
+<text x="57" y="106" font-size="17" fill="#abc0d8" font-weight="400" text-anchor="start" letter-spacing="1.1">RTL ARCHITECTURE  /  Figure 2 datapath</text>
+<text x="1543" y="68" font-size="17" fill="#64dfbd" font-weight="600" text-anchor="end" >INT8  ·  STREAMING HARDWARE</text>
+<rect x="36" y="144" width="1528" height="416" rx="20" fill="#101e30" stroke="#2a405b" stroke-width="1.5"/>
+<text x="76" y="187" font-size="17" fill="#abc0d8" font-weight="600" text-anchor="start" letter-spacing="1.5">FLOW ESTIMATION + IMAGE SYNTHESIS</text>
+<rect x="1260" y="163" width="268" height="40" rx="20" fill="#1a2e44" stroke="#3a536d" stroke-width="1.5"/>
+<text x="1394" y="189" font-size="17" fill="#abc0d8" font-weight="400" text-anchor="middle" >AXI-Lite · command control</text>
+<polyline points="178,620 178,450" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="190" y="587" font-size="17" fill="#abc0d8" font-weight="400" text-anchor="start" >Input RGB</text>
+<polyline points="415,516 415,584 745,584 745,620" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)" marker-start="url(#back)"/>
+<text x="585" y="574" font-size="16" fill="#abc0d8" font-weight="400" text-anchor="middle" >Feature history</text>
+<polyline points="1442,450 1442,620" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)" marker-start="url(#back)"/>
+<text x="1425" y="587" font-size="16" fill="#abc0d8" font-weight="400" text-anchor="end" >RGB / samples</text>
+<polyline points="280,380 322,380" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="1142,380 1174,380" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="1286,380 1298,380" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="1323,380 1340,380" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="76" y="306" width="204" height="144" rx="14" fill="#15263b" stroke="#78b7ff" stroke-width="1.5"/>
+<path d="M94 307H262" stroke="#78b7ff" stroke-width="3"/>
+<text x="178.0" y="343" font-size="23" fill="#78b7ff" font-weight="650" text-anchor="middle" >Encoder</text>
+<rect x="88" y="264" width="34" height="28" rx="7" fill="#1c3048" stroke="#344d68" stroke-width="1.5"/>
+<text x="105" y="284" font-size="14" fill="#78b7ff" font-weight="650" text-anchor="middle" >01</text>
+<text x="178" y="381" font-size="21" fill="#eff6ff" font-weight="400" text-anchor="middle" >3 → 8 → 16 → 32</text>
+<text x="178" y="417" font-size="18" fill="#abc0d8" font-weight="400" text-anchor="middle" >Strided conv ×3</text>
+<text x="178" y="440" font-size="14" fill="#abc0d8" font-weight="400" text-anchor="middle" >1920 × 1080</text>
+<rect x="322" y="306" width="186" height="210" rx="14" fill="#15263b" stroke="#64dfbd" stroke-width="1.5"/>
+<path d="M340 307H490" stroke="#64dfbd" stroke-width="3"/>
+<text x="415.0" y="343" font-size="23" fill="#64dfbd" font-weight="650" text-anchor="middle" >FMR</text>
+<rect x="334" y="264" width="34" height="28" rx="7" fill="#1c3048" stroke="#344d68" stroke-width="1.5"/>
+<text x="351" y="284" font-size="14" fill="#64dfbd" font-weight="650" text-anchor="middle" >02</text>
+<text x="415" y="381" font-size="21" fill="#eff6ff" font-weight="400" text-anchor="middle" >32 + 32 → 64</text>
+<text x="415" y="410" font-size="16" fill="#abc0d8" font-weight="400" text-anchor="middle" >Reuse + concatenate</text>
+<rect x="334" y="434" width="162" height="65" rx="10" fill="#173b3c" stroke="#356665" stroke-width="1.5"/>
+<text x="415" y="454" font-size="15.5" fill="#64dfbd" font-weight="600" text-anchor="middle" >Selective transfer</text>
+<text x="415" y="475" font-size="15" fill="#abc0d8" font-weight="400" text-anchor="middle" >Upper 3 bits / ch.</text>
+<text x="415" y="494" font-size="15" fill="#64dfbd" font-weight="400" text-anchor="middle" >Match → skip write</text>
+<rect x="532" y="212" width="396" height="320" rx="16" fill="#17283a" stroke="#4d4b43" stroke-width="1.5"/>
+<polyline points="508,380 548,380" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="904,380 948,380" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="550" y="241" font-size="18" fill="#f1c577" font-weight="650" text-anchor="start" letter-spacing="1">03  BOTTLENECK</text>
+<rect x="548" y="270" width="40" height="198" rx="8" fill="#303735" stroke="#7c856b" stroke-width="1.5"/>
+<text x="568" y="369" font-size="16" fill="#abc0d8" font-weight="400" text-anchor="middle" transform="rotate(-90 568 369)">Shared FM window</text>
+<polyline points="588,380 600,380" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="600,292 600,436" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="766,292 766,436" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="600,292 616,292" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="616" y="272" width="132" height="40" rx="9" fill="#32352f" stroke="#817354" stroke-width="1.5"/>
+<text x="682" y="299" font-size="18" fill="#f1c577" font-weight="550" text-anchor="middle" >HDC · dₓ = 1</text>
+<polyline points="748,292 766,292" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="600,340 616,340" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="616" y="320" width="132" height="40" rx="9" fill="#32352f" stroke="#817354" stroke-width="1.5"/>
+<text x="682" y="347" font-size="18" fill="#f1c577" font-weight="550" text-anchor="middle" >HDC · dₓ = 2</text>
+<polyline points="748,340 766,340" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="600,388 616,388" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="616" y="368" width="132" height="40" rx="9" fill="#32352f" stroke="#817354" stroke-width="1.5"/>
+<text x="682" y="395" font-size="18" fill="#f1c577" font-weight="550" text-anchor="middle" >HDC · dₓ = 3</text>
+<polyline points="748,388 766,388" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="600,436 616,436" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="616" y="416" width="132" height="40" rx="9" fill="#32352f" stroke="#817354" stroke-width="1.5"/>
+<text x="682" y="443" font-size="18" fill="#f1c577" font-weight="550" text-anchor="middle" >HDC · dₓ = 4</text>
+<polyline points="748,436 766,436" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="766,380 792,380" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="792" y="320" width="112" height="120" rx="12" fill="#30352f" stroke="#817354" stroke-width="1.5"/>
+<text x="848" y="352" font-size="24" fill="#f1c577" font-weight="650" text-anchor="middle" >1 × 1</text>
+<text x="848" y="383" font-size="22" fill="#eff6ff" font-weight="400" text-anchor="middle" >Shrink</text>
+<text x="848" y="413" font-size="18" fill="#abc0d8" font-weight="400" text-anchor="middle" >256 → 64</text>
+<text x="730" y="486" font-size="16" fill="#abc0d8" font-weight="400" text-anchor="middle" >Four horizontal dilation branches</text>
+<text x="730" y="513" font-size="16" fill="#f1c577" font-weight="400" text-anchor="middle" >Concatenate → pointwise shrink</text>
+<rect x="948" y="306" width="194" height="144" rx="14" fill="#15263b" stroke="#78b7ff" stroke-width="1.5"/>
+<path d="M966 307H1124" stroke="#78b7ff" stroke-width="3"/>
+<text x="1045.0" y="343" font-size="23" fill="#78b7ff" font-weight="650" text-anchor="middle" >Decoder</text>
+<rect x="960" y="264" width="34" height="28" rx="7" fill="#1c3048" stroke="#344d68" stroke-width="1.5"/>
+<text x="977" y="284" font-size="14" fill="#78b7ff" font-weight="650" text-anchor="middle" >04</text>
+<text x="1045" y="381" font-size="18" fill="#eff6ff" font-weight="400" text-anchor="middle" >64 → 32 → 16 → 8</text>
+<text x="1045" y="409" font-size="16" fill="#abc0d8" font-weight="400" text-anchor="middle" >Transposed conv ×3</text>
+<text x="1045" y="435" font-size="15" fill="#78b7ff" font-weight="400" text-anchor="middle" >Kernel split · zero skip</text>
+<rect x="1174" y="306" width="112" height="144" rx="14" fill="#15263b" stroke="#bfacff" stroke-width="1.5"/>
+<path d="M1192 307H1268" stroke="#bfacff" stroke-width="3"/>
+<text x="1230.0" y="343" font-size="23" fill="#bfacff" font-weight="650" text-anchor="middle" >Head</text>
+<text x="1230" y="381" font-size="23" fill="#eff6ff" font-weight="400" text-anchor="middle" >8 → 3</text>
+<text x="1230" y="410" font-size="16" fill="#abc0d8" font-weight="400" text-anchor="middle" >dx · dy · m</text>
+<text x="1230" y="435" font-size="15" fill="#bfacff" font-weight="400" text-anchor="middle" >HardTanh</text>
+<rect x="1300" y="362" width="5" height="36" rx="2" fill="#bfacff" stroke="#bfacff" stroke-width="1.5"/>
+<rect x="1308" y="362" width="5" height="36" rx="2" fill="#bfacff" stroke="#bfacff" stroke-width="1.5"/>
+<rect x="1316" y="362" width="5" height="36" rx="2" fill="#bfacff" stroke="#bfacff" stroke-width="1.5"/>
+<text x="1310" y="479" font-size="15" fill="#bfacff" font-weight="400" text-anchor="middle" >Credit pipe</text>
+<rect x="1340" y="306" width="204" height="144" rx="14" fill="#15263b" stroke="#64dfbd" stroke-width="1.5"/>
+<path d="M1358 307H1526" stroke="#64dfbd" stroke-width="3"/>
+<text x="1442.0" y="343" font-size="23" fill="#64dfbd" font-weight="650" text-anchor="middle" >Synthesizer</text>
+<text x="1442" y="381" font-size="19" fill="#eff6ff" font-weight="400" text-anchor="middle" >Spatial cache</text>
+<text x="1442" y="410" font-size="18" fill="#abc0d8" font-weight="400" text-anchor="middle" >Bilinear warp</text>
+<text x="1442" y="435" font-size="18" fill="#abc0d8" font-weight="400" text-anchor="middle" >Mask blend</text>
+<rect x="76" y="620" width="350" height="116" rx="14" fill="#132338" stroke="#344d68" stroke-width="1.5"/>
+<text x="96" y="652" font-size="22" fill="#78b7ff" font-weight="650" text-anchor="start" >M00 · AXI4</text>
+<text x="96" y="684" font-size="18" fill="#eff6ff" font-weight="400" text-anchor="start" >Frames · configuration · weights</text>
+<text x="96" y="714" font-size="15" fill="#abc0d8" font-weight="400" text-anchor="start" >Burst DMA · resident coefficients</text>
+<polyline points="251.0,784 251.0,736" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="570" y="620" width="350" height="116" rx="14" fill="#132338" stroke="#344d68" stroke-width="1.5"/>
+<text x="590" y="652" font-size="22" fill="#64dfbd" font-weight="650" text-anchor="start" >M01 · AXI4</text>
+<text x="590" y="684" font-size="18" fill="#eff6ff" font-weight="400" text-anchor="start" >Retained encoded features</text>
+<text x="590" y="714" font-size="15" fill="#abc0d8" font-weight="400" text-anchor="start" >Reads · selective writes · credit pipe</text>
+<polyline points="745.0,736 745.0,784" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)" marker-start="url(#back)"/>
+<rect x="1064" y="620" width="480" height="116" rx="14" fill="#132338" stroke="#344d68" stroke-width="1.5"/>
+<text x="1084" y="652" font-size="22" fill="#bfacff" font-weight="650" text-anchor="start" >M02 · AXI4</text>
+<text x="1084" y="684" font-size="18" fill="#eff6ff" font-weight="400" text-anchor="start" >Sample reads · synthesized RGB writes</text>
+<text x="1084" y="714" font-size="15" fill="#abc0d8" font-weight="400" text-anchor="start" >Credit request queue · burst output DMA</text>
+<polyline points="1304.0,736 1304.0,784" fill="none" stroke="#8399b4" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)" marker-start="url(#back)"/>
+<rect x="76" y="784" width="1468" height="60" rx="14" fill="#192b40" stroke="#3e5a75" stroke-width="1.5"/>
+<text x="98" y="822" font-size="23" fill="#eff6ff" font-weight="650" text-anchor="start" >External DDR</text>
+<text x="800" y="821" font-size="20" fill="#abc0d8" font-weight="400" text-anchor="middle" >Input frames · feature history · output frames</text>
+<text x="1519" y="821" font-size="17" fill="#64dfbd" font-weight="400" text-anchor="end" >Burst + outstanding</text>
+<text x="800" y="868" font-size="15" fill="#abc0d8" font-weight="400" text-anchor="middle" >Row-wise buffers    /    Resident INT8 weights    /    Shift quantization    /    Registered datapaths</text>
+</g>
+</svg>

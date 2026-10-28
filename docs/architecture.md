@@ -47,7 +47,7 @@ buffer capacities omitted.
 | Frame synthesizer | `fi_synth.vp`, `fi_blend_pipe.vp` | `model_pipeline.py` |
 | FM/WT storage and loading | `fi_fm_*.vp`, `fi_wt_*.vp`, `fi_weights.vp` | — |
 | MAC and reduction | `fi_dsp_mac4.vp`, `fi_reduce_tree.vp` | — |
-| Output queue / elastic transport | `fi_vector_fifo.vp`, `fi_skid_buffer.vp` | — |
+| Output queue / elastic and credit transport | `fi_vector_fifo.vp`, `fi_skid_buffer.vp`, `fi_slr_credit.vp` | — |
 
 These diagrams describe the current implementation using the paper's layout.
 They do not assert that the U200-derived evaluation reproduces the published
