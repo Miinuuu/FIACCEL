@@ -1,7 +1,7 @@
 # Protected RTL evaluation
 
 Evaluate FIACCEL through its AXI interfaces without distributing the RTL source.
-The 29 implementation modules are distributed as IEEE 1735-2014 V2 encrypted
+The 30 implementation modules are distributed as IEEE 1735-2014 V2 encrypted
 Verilog, with **simulation-only** access for AMD Vivado XSim.
 
 ## Run the demo
@@ -87,7 +87,7 @@ implementation properties are impossible to infer from interfaces or behavior.
 ## Files
 
 ```text
-rtl_vp/             # 29 protected Verilog modules, source list and SHA-256 manifest
+rtl_vp/             # 30 protected Verilog modules, source list and SHA-256 manifest
 hardware/
 ├── fixtures/smoke/  # deterministic inputs and expected results
 ├── scripts/         # XSim command-line runner

@@ -18,6 +18,7 @@ rtl_vp/fi_dsp_mac4.vp
 rtl_vp/fi_synth.vp
 rtl_vp/fi_blend_pipe.vp
 rtl_vp/fi_skid_buffer.vp
+rtl_vp/fi_slr_credit.vp
 rtl_vp/fi_weight_lut_bank.vp
 rtl_vp/fi_vector_fifo.vp
 rtl_vp/fi_spatial_cache_bank.vp

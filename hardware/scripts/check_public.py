@@ -13,8 +13,8 @@ def check():
     manifest = json.loads((ROOT/'rtl_vp/manifest.json').read_text())
     listed = (ROOT/'rtl_vp/files.f').read_text().splitlines()
     actual = {str(p.relative_to(ROOT)) for p in (ROOT/'rtl_vp').glob('*.vp')}
-    if len(actual) != 29 or set(listed) != actual or set(manifest['sha256']) != actual:
-        raise ValueError('Expected exactly 29 protected modules in list and manifest')
+    if len(actual) != 30 or set(listed) != actual or set(manifest['sha256']) != actual:
+        raise ValueError('Expected exactly 30 protected modules in list and manifest')
     forbidden = {'.v', '.vhd', '.vhdl', '.lic', '.dcp', '.edf', '.edn', '.bit', '.xo', '.xclbin', '.rpt', '.log', '.jou', '.pb'}
     for folder in ('rtl_vp', 'hardware'):
         for path in (ROOT/folder).rglob('*'):
@@ -42,7 +42,7 @@ def check():
             continue
         if name.startswith('rtl/') or Path(name).suffix.lower() in forbidden:
             raise ValueError('Tracked private/generated artifact: '+name)
-    print('PASS: 29 encrypted modules; matching SHA-256/list; simulation-only rights; no private hardware artifacts')
+    print('PASS: 30 encrypted modules; matching SHA-256/list; simulation-only rights; no private hardware artifacts')
 
 
 if __name__ == '__main__':

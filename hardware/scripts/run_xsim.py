@@ -67,6 +67,9 @@ def main():
                       not (output/'waves.wdb').is_file()):
         raise RuntimeError('Internal signal visibility / waveform recording check failed')
     report = dict(result='PASS', simulator='Vivado XSim', axi_data_width=args.data_width,
+                  protected_module_count=len(sources),
+                  encrypted_manifest_sha256=hashlib.sha256((ROOT/'rtl_vp/manifest.json').read_bytes()).hexdigest(),
+                  source_fingerprint_sha256=manifest['source_fingerprint_sha256'],
                   checked_rgb_pixels=len(actual), fixture='smoke',
                   internal_signal_read='PASS' if args.waves else 'not requested',
                   waveform='waves.wdb' if args.waves else None,
