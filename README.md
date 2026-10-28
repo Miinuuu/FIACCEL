@@ -11,6 +11,15 @@ INT8 frame interpolation with feature reuse, selective DRAM transfer,
 row-wise fusion and kernel decomposition. RTL is provided as **30 encrypted
 modules** in [`rtl_vp/`](rtl_vp/), with XSim simulation-only access.
 
+<details>
+<summary>Vivado top schematic</summary>
+
+<a href="fig/fiaccel_vivado_top.svg"><img src="fig/fiaccel_vivado_top.svg" width="900" alt="Vivado RTL schematic of the FIACCEL top-level wrapper"></a>
+
+[Core integration schematic](fig/fiaccel_vivado_core.svg) · [View details](docs/architecture.md#vivado-rtl-schematics)
+
+</details>
+
 ## Run
 
 Requires **Vivado 2024.2 (Linux)** on `PATH` and **Python 3**.
