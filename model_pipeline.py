@@ -1,147 +1,88 @@
+"""Three-channel midpoint flow/mask synthesis and explicit video-stream state."""
 import torch
-import torch.nn.functional as F
-import torch.nn as nn
-import torch
-from datamodules.video_data_api import  VideoData
+from torch import nn
+from torch.nn import functional as F
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-backwarp_tenGrid = {}
 
-def warp(tenInput, tenFlow):
-    k = (str(tenFlow.device), str(tenFlow.size()))
-    if k not in backwarp_tenGrid:
-        tenHorizontal = torch.linspace(-1.0, 1.0, tenFlow.shape[3], device=device).view(
-            1, 1, 1, tenFlow.shape[3]).expand(tenFlow.shape[0], -1, tenFlow.shape[2], -1)
-        tenVertical = torch.linspace(-1.0, 1.0, tenFlow.shape[2], device=device).view(
-            1, 1, tenFlow.shape[2], 1).expand(tenFlow.shape[0], -1, -1, tenFlow.shape[3])
-        backwarp_tenGrid[k] = torch.cat(
-            [tenHorizontal, tenVertical], 1).to(device)
+def _grid(height, width, reference):
+    x = torch.linspace(-1, 1, width, device=reference.device, dtype=reference.dtype)
+    y = torch.linspace(-1, 1, height, device=reference.device, dtype=reference.dtype)
+    gy, gx = torch.meshgrid(y, x, indexing='ij')
+    return torch.stack((gx, gy), dim=-1).unsqueeze(0)
 
-    tenFlow = torch.cat([tenFlow[:, 0:1, :, :] / ((tenInput.shape[3] - 1.0) / 2.0),
-                         tenFlow[:, 1:2, :, :] / ((tenInput.shape[2] - 1.0) / 2.0)], 1)
 
-    g = (backwarp_tenGrid[k] + tenFlow).permute(0, 2, 3, 1)
-    return torch.nn.functional.grid_sample(input=tenInput, grid=g, mode='bilinear', padding_mode='border', align_corners=True)
+def warp(image, pixel_flow):
+    """Compatibility helper for a displacement measured in pixels."""
+    height, width = image.shape[-2:]
+    denominator = image.new_tensor((max(width-1, 1)/2, max(height-1, 1)/2))
+    coordinates = _grid(height, width, image) + pixel_flow.permute(0, 2, 3, 1) / denominator
+    return F.grid_sample(image, coordinates, mode='bilinear', padding_mode='border', align_corners=True)
+
 
 class FIACCELPipeline(nn.Module):
-    """
-    Glue together encoder transform, entropy model and decoder transform
-    """
-    def __init__(
-        self,
-        flow_estimation:nn.Module,
-        ) :
+    """[flow_x, flow_y, mask] HardTanh output, matching the RTL synthesizer."""
+
+    def __init__(self, flow_estimation):
         super().__init__()
-
         self.flow_estimation = flow_estimation
+        self.register_buffer('_previous_frame', None, persistent=False)
 
-    
-    def meshgrid(self,height, width):
-        x_t = torch.matmul(
-            torch.ones(height, 1), torch.linspace(-1.0, 1.0, width).view(1, width))
-        y_t = torch.matmul(
-            torch.linspace(-1.0, 1.0, height).view(height, 1), torch.ones(1, width))
-        grid_x = x_t.view(1, height, width)
-        grid_y = y_t.view(1, height, width)
-        return grid_x, grid_y
+    @staticmethod
+    def meshgrid(height, width, device=None, dtype=None):
+        reference = torch.empty((), device=device, dtype=dtype)
+        grid = _grid(height, width, reference)
+        return grid[..., 0], grid[..., 1]
+
+    @staticmethod
+    def synthesize(previous, current, out):
+        if previous.shape != current.shape or previous.ndim != 4 or previous.shape[1] != 3:
+            raise ValueError('Expected equally shaped RGB [B,3,H,W] frames')
+        height, width = previous.shape[-2:]
+        if (out.ndim != 4 or out.shape[1] != 3 or out.shape[0] != previous.shape[0]
+                or out.shape[-2] < height or out.shape[-1] < width):
+            raise ValueError('Expected three flow_x/flow_y/mask channels at input resolution')
+        # Stride-2 layers round odd dimensions up; retain the original image.
+        out = out[:, :, :height, :width]
+        half_flow = 0.5 * out[:, :2].permute(0, 2, 3, 1)
+        grid = _grid(height, width, previous)
+        warped_previous = F.grid_sample(previous, grid-half_flow, mode='bilinear',
+                                        padding_mode='border', align_corners=True)
+        warped_current = F.grid_sample(current, grid+half_flow, mode='bilinear',
+                                       padding_mode='border', align_corners=True)
+        alpha = (1.0 + out[:, 2:3]) * 0.5
+        return (warped_previous*alpha + warped_current*(1.0-alpha)).clamp(0, 1)
+
+    def interpolate(self, previous, current):
+        """Stateless pair path for training and independent clips."""
+        return self.synthesize(previous, current, self.flow_estimation(previous, current))
+
+    def forward(self, video):
+        images = video.video_tensor
+        return self.interpolate(images[:, 0], images[:, 2])
+
+    def reset_stream(self):
+        self.flow_estimation.reset_stream()
+        self._previous_frame = None
 
     @torch.no_grad()
-    def inference(self,  video:VideoData, timestep = 0.5):
+    def forward_frame(self, frame, timestep=0.5):
+        """Warm one frame, then synthesize each adjacent frame pair using FMR."""
+        out = self.flow_estimation.forward_frame(frame, timestep=timestep)
+        previous = self._previous_frame
+        self._previous_frame = frame.detach().clone()
+        if out is None:
+            return None
+        return self.synthesize(previous, frame, out)
 
-        imgs=video.video_tensor
-        B, T, C, H, W = imgs.shape
-        img0,gt,img1 = imgs[:, 0,...],imgs[:,1,...],imgs[:, 2,...]
-        out = self.flow_estimation(img0,img1)
-        
-        mode= 'uniflow'
-        
-        if mode == 'uniflow' :
-            flow = out[:,0:2]
-            mask = out[:,2:3]
-        elif mode == 'biflow' :
-            flow = out[:,0:4]
-            mask = out[:,4:5]
+    @torch.no_grad()
+    def inference(self, video, timestep=0.5):
+        # Independent triplets must never inherit a different clip's cache.
+        self.reset_stream()
+        images = video.video_tensor
+        self.forward_frame(images[:, 0], timestep=timestep)
+        return self.forward_frame(images[:, 2], timestep=timestep)
 
-        flow = 0.5 * flow
-        mask = 0.5 * (1.0 + mask)
-
-        if mode == 'uniflow' :
-            grid_x ,grid_y = self.meshgrid(H,W)
-            grid_x = torch.autograd.Variable(
-            grid_x.repeat([B, 1, 1])).cuda()
-            grid_y = torch.autograd.Variable(
-            grid_y.repeat([B, 1, 1])).cuda()
-            coor_x_1 = grid_x - flow[:, 0, :, :]
-            coor_y_1 = grid_y - flow[:, 1, :, :]
-            coor_x_2 = grid_x + flow[:, 0, :, :]
-            coor_y_2 = grid_y + flow[:, 1, :, :]
-
-            warped_img0 = torch.nn.functional.grid_sample(
-            img0,
-                torch.stack([coor_x_1,coor_y_1],dim=3),
-                padding_mode='border',align_corners=True)
-            warped_img1 = torch.nn.functional.grid_sample(
-                img1,
-                torch.stack([coor_x_2,coor_y_2],dim=3),
-                padding_mode='border',align_corners=True)
-
-        elif mode =='biflow':
-            mask=torch.sigmoid(mask)
-            warped_img0 =  warp(img0, flow[:,  :2])
-            warped_img1 =  warp(img1, flow[:, 2:4])
-
-        merged=(warped_img0 * mask + warped_img1 * (1 - mask))
-
-        pred = torch.clamp( merged, 0, 1)
-
-        return pred
-
-
-
-    def forward(self, video:VideoData):
-
-        imgs=video.video_tensor
-        B, T, C, H, W = imgs.shape
-        img0,gt,img1 = imgs[:, 0,...],imgs[:,1,...],imgs[:, 2,...]
-        out = self.flow_estimation(img0,img1)
-        
-        mode= 'uniflow'
-     
-        if mode == 'uniflow' :
-            flow = out[:,0:2]
-            mask = out[:,2:3]
-
-            flow = 0.5 * flow
-            mask = 0.5 * (1.0 + mask)
-            
-            grid_x ,grid_y = self.meshgrid(H,W)
-            grid_x = torch.autograd.Variable(
-            grid_x.repeat([B, 1, 1])).cuda()
-            grid_y = torch.autograd.Variable(
-            grid_y.repeat([B, 1, 1])).cuda()
-            coor_x_1 = grid_x - flow[:, 0, :, :]
-            coor_y_1 = grid_y - flow[:, 1, :, :]
-            coor_x_2 = grid_x + flow[:, 0, :, :]
-            coor_y_2 = grid_y + flow[:, 1, :, :]
-
-            warped_img0 = torch.nn.functional.grid_sample(
-            img0,
-                torch.stack([coor_x_1,coor_y_1],dim=3),
-                padding_mode='border',align_corners=True)
-            warped_img1 = torch.nn.functional.grid_sample(
-                img1,
-                torch.stack([coor_x_2,coor_y_2],dim=3),
-                padding_mode='border',align_corners=True)
-
-        elif mode =='biflow':
-            flow = out[:,0:4]
-            mask = out[:,4:5]
-            mask=torch.sigmoid(mask)
-            warped_img0 =  warp(img0, flow[:,  :2])
-            warped_img1 =  warp(img1, flow[:, 2:4])
-
-        merged=(warped_img0 * mask + warped_img1 * (1 - mask))
-
-        pred = torch.clamp( merged, 0, 1)
-
-        return pred
+    def train(self, mode=True):
+        if mode and hasattr(self, '_previous_frame'):
+            self._previous_frame = None
+        return super().train(mode)

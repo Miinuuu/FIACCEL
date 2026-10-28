@@ -1,0 +1,14 @@
+# Public hardware contains protected implementation and readable verification only.
+*.v
+*.vhd
+*.vhdl
+*.dcp
+*.edf
+*.edn
+*.bit
+*.xclbin
+*.lic
+*.rpt
+*.log
+*.jou
+*.pb

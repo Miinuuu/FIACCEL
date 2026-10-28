@@ -1,0 +1,62 @@
+`pragma protect begin_protected
+`pragma protect version = 2
+`pragma protect encrypt_agent = "XILINX"
+`pragma protect encrypt_agent_info = "Xilinx Encryption Tool 2024.2"
+`pragma protect begin_commonblock
+`pragma protect control error_handling = "delegated"
+`pragma protect control runtime_visibility = "delegated"
+`pragma protect control child_visibility = "delegated"
+`pragma protect control decryption = (activity==simulation) ? "true" : "false"
+`pragma protect end_commonblock
+`pragma protect begin_toolblock
+`pragma protect rights_digest_method = "sha256"
+`pragma protect key_keyowner = "Xilinx", key_keyname= "xilinxt_2023_11", key_method = "rsa", key_block
+lt5deaWCJkDSkNRxj8Z7/ReUQ4IPD3zdpLefuXE6dbuZQi11O4nju8U+Ev03HOIm36Ymg/xEdUFj
+vajF+2sbndmH2ojThzExkkS9o2R15e+Hul6Hw640lT7QXbB8SlAhzoxkfjMgRwRb5hGc+M9+I5Vn
+qVHFH9/bVdhm7+QF7ZyclZ0IhC2I6/7v8ts7gJKHqURxPRY65O5rMYw9CRihXK+wUuzJYnlk406m
+hER2wOliHkfnial8mtcmEaa987CdiddkzTtRJJO2/qO/2ftdW3zcuySVnm6vHx53voivTP8ws85W
+IzWU/qrzH9AuNCnsHFmGcyAn0HN2YCSLP88zew==
+
+`pragma protect control xilinx_configuration_visible = "false"
+`pragma protect control xilinx_enable_modification = "false"
+`pragma protect control xilinx_enable_probing = "true"
+`pragma protect control xilinx_enable_netlist_export = "false"
+`pragma protect control xilinx_enable_bitstream = "false"
+`pragma protect control xilinx_schematic_visibility = "true"
+`pragma protect control decryption = (xilinx_activity==simulation) ? "true" : "false"
+`pragma protect end_toolblock="5/YrRsh1EnRE9KOsfmDOPKpbxWvTQ5XUQ9p86MxZCzE="
+`pragma protect data_method = "AES128-CBC"
+`pragma protect encoding = (enctype = "BASE64", line_length = 76, bytes = 1728)
+`pragma protect data_block
+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
+LBk5XEuLqSagatQg4UFRDQmW
+`pragma protect end_protected

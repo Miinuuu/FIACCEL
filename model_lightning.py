@@ -10,7 +10,7 @@ from omegaconf import DictConfig
 from torch import Tensor
 from torchmetrics.functional import peak_signal_noise_ratio
 from utils.hydra_tools import OmegaConf  # ! Needed for resolvets to take effect
-from neural.loss import LapLoss
+from model.loss import LapLoss
 
 
 class FIACCELModule(pytorch_lightning.LightningModule):

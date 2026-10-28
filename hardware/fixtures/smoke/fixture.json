@@ -1,0 +1,32 @@
+{
+  "width": 16,
+  "height": 8,
+  "depths": [
+    2,
+    3,
+    4,
+    4,
+    3,
+    2,
+    2
+  ],
+  "frames": 3,
+  "config_records": 1696,
+  "memory_words": 3800,
+  "stats": [
+    [
+      2,
+      0
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      4,
+      2
+    ]
+  ],
+  "weights": "deterministic synthetic, not trained",
+  "spec": "3-channel HardTanh, aggregate HDC Pm=8 (2 per branch), physical head Pm=3"
+}
