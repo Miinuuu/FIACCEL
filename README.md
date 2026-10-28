@@ -1,19 +1,15 @@
 # FIACCEL
 
+[![FIACCEL RTL architecture](fig/fiaccel_rtl_top.svg)](docs/architecture.md)
+
 **Memory Efficient Frame Interpolation Accelerator for Full-HD Video**<br>
 Min Wu Jeong · Chae Eun Rhee | Inha University | IEEE TCAS-II, 2024
 
 [Paper](https://doi.org/10.1109/TCSII.2023.3329966) · [Architecture](docs/architecture.md) · [Training](docs/training.md) · [RTL guide](hardware/README.md) · [U200 host](hardware/u200/README.md)
 
 INT8 frame interpolation with feature reuse, selective DRAM transfer,
-row-wise fusion and kernel decomposition. RTL is provided as **24 encrypted
+row-wise fusion and kernel decomposition. RTL is provided as **30 encrypted
 modules** in [`rtl_vp/`](rtl_vp/), with XSim simulation-only access.
-
-## Architecture
-
-![FIACCEL RTL architecture](fig/fiaccel_architecture.svg)
-
-Encoder → FMR → four HDC branches → decoder → three-channel flow/mask → warp and blend.
 
 ## Run
 
