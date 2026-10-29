@@ -2,6 +2,9 @@
 
 [Project overview](../../README.md) · [Demo MP4](../../media/fiaccel_u200_demo.mp4) · [XSim evaluation](../README.md)
 
+**Board build image:** [Download FIACCEL.xclbin](https://github.com/Miinuuu/FIACCEL/raw/refs/heads/main/hardware/u200/prebuilt/FIACCEL.xclbin)
+— 60.3 MB, U200 / 300 MHz. [Image manifest and SHA-256](prebuilt/manifest.json).
+
 <img src="../../fig/alveo_u200.jpg" width="420" alt="AMD Alveo U200 accelerator card, manufacturer product image">
 
 AMD Alveo U200 product image, © AMD. [Image source](https://www.amd.com/en/products/accelerators/alveo/u200/a-u200-p64g-pq-g.html).
@@ -25,13 +28,14 @@ FPS above describes the encoded video. [Validation summary](validation.json).
 ## Build the host and run a video
 
 Requires Linux, a C++17 compiler, XRT development headers/libraries,
-FFmpeg/FFprobe and a compatible FIACCEL `.xclbin` supplied separately.
+FFmpeg/FFprobe and the U200 platform listed above.
 Use an idle U200 and run from the repository root:
 
 ```bash
 make -C sw host
+python3 hardware/scripts/check_public.py
 python3 sw/video/interpolate_video.py input_1080p.mp4 output_1080p60.mp4 \
-  --xclbin /path/to/FIACCEL.xclbin \
+  --xclbin hardware/u200/prebuilt/FIACCEL.xclbin \
   --host build/u200/host --weights weights/u200_int8/config.hex
 ```
 
@@ -68,5 +72,5 @@ v++ -t hw \
 
 The encrypted RTL in this repository permits XSim evaluation and signal
 inspection. It does not permit synthesis or bitstream generation. The command
-above requires a separately authorized kernel XO; this release supplies host
-sources and integration settings.
+above requires a separately authorized kernel XO. The prebuilt xclbin is
+provided for board execution; it does not change the protected RTL permissions.

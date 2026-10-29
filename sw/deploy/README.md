@@ -12,12 +12,12 @@ python3 sw/deploy/u200_model.py pack \
   --fixture /path/to/reference_fixture --output build/model_bundle
 python3 sw/deploy/u200_model.py check build/model_bundle
 python3 sw/deploy/u200_model.py self-test build/model_bundle \
-  --xclbin /path/to/FIACCEL.xclbin
+  --xclbin hardware/u200/prebuilt/FIACCEL.xclbin
 ```
 
 The fixture must provide `input.rgb`, `expected.rgb` and `manifest.json`,
 with at least two Full-HD input frames and exact integer reference output.
 Reference generation must retain selective-transfer feature representatives
-across frames. Model-specific RGB fixtures and device binaries are supplied
-separately. The self-test checks device availability before programming and
+across frames. Model-specific RGB fixtures are supplied separately; the U200
+image is in `hardware/u200/prebuilt/`. The self-test checks device availability before programming and
 compares every output RGB byte. It requires no training framework.

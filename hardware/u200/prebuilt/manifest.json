@@ -1,0 +1,14 @@
+{
+  "format": "fiaccel-u200-image-v1",
+  "file": "FIACCEL.xclbin",
+  "bytes": 60282116,
+  "sha256": "27bbf5cc8098762fab3396f54c55d26a38a7b618f70b14f7fc37963051d78bda",
+  "board": "AMD Alveo U200",
+  "platform": "xilinx_u200_gen3x16_xdma_2_202110_1",
+  "kernel": "FIACCEL:{FIACCEL_1}",
+  "kernel_clock_mhz": 300,
+  "toolchain": "Vivado / Vitis 2024.2",
+  "development_commit": "821c856394d8719945b27beda1374b725eb04a52",
+  "validation": "Physical U200: Full-HD trained-model integer reference and MP4 video I/O passed; see ../validation.json",
+  "purpose": "Prebuilt device image for XRT host execution"
+}
