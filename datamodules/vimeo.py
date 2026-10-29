@@ -44,6 +44,7 @@ class VimeoDataModule(LightningDataModule):
         video_crop_size: Union[int, Sequence[int]] = (256, 256),
         num_workers: int = 2,
         pin_memory: bool = False,
+        persistent_workers: bool = False,
     ):
         super().__init__()
 
@@ -54,6 +55,7 @@ class VimeoDataModule(LightningDataModule):
         self.video_crop_size = video_crop_size
         self.num_workers = num_workers
         self.pin_memory = pin_memory
+        self.persistent_workers = persistent_workers and num_workers > 0
 
     def _video_transform(self, mode: str) -> torchvision.transforms.Compose:
         scaling = []
@@ -132,6 +134,7 @@ class VimeoDataModule(LightningDataModule):
             shuffle=True,
             pin_memory=self.pin_memory,
             collate_fn=self._custom_collate,
+            persistent_workers=self.persistent_workers,
         )
 
     def val_dataloader(self) -> Union[DataLoader, List[DataLoader]]:
@@ -142,6 +145,7 @@ class VimeoDataModule(LightningDataModule):
             shuffle=False,
             pin_memory=self.pin_memory,
             collate_fn=self._custom_collate,
+            persistent_workers=self.persistent_workers,
         )
     
     def test_dataloader(self) -> Union[DataLoader, List[DataLoader]]:
@@ -152,4 +156,5 @@ class VimeoDataModule(LightningDataModule):
             shuffle=False,
             pin_memory=self.pin_memory,
             collate_fn=self._custom_collate,
+            persistent_workers=self.persistent_workers,
         )
