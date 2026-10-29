@@ -50,6 +50,27 @@ Input must be **1920×1080**. A 30 fps source produces a 60 fps output file,
 with original frames and learned midpoints. Logs and frame counts are saved in
 `output_1080p60.mp4.fiaccel/`. See the [board guide](hardware/u200/README.md) for details.
 
+## Hardware emulation (hw_emu)
+
+Requires **Vitis/Vivado 2024.2**, XRT and a separately prepared **hw_emu xclbin**.
+The published U200 board image is for physical hardware. After sourcing the
+Vitis and XRT environment scripts, run:
+
+```bash
+make -C sw host
+mkdir -p build/hw_emu
+cp /path/to/hw_emu/FIACCEL.xclbin build/hw_emu/FIACCEL.xclbin
+emconfigutil --platform xilinx_u200_gen3x16_xdma_2_202110_1 --od build/hw_emu
+export XCL_EMULATION_MODE=hw_emu EMCONFIG_PATH="$PWD/build/hw_emu"
+FIACCEL_CONFIG_SMOKE=1 FIACCEL_TIMEOUT_SECONDS=120 \
+  build/u200/host build/hw_emu/FIACCEL.xclbin
+unset XCL_EMULATION_MODE
+```
+
+This checks configuration/control AXI. See the [hw_emu guide](hardware/u200/README.md#hardware-emulation-hw_emu)
+for a two-frame video run. Full-HD RTL emulation can take hours; the small
+XSim fixture below is the quick functional check.
+
 ## RTL simulation
 
 Requires **Vivado 2024.2 (Linux)** on `PATH` and **Python 3**.

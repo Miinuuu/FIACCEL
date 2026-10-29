@@ -52,6 +52,52 @@ the video command above loads the published trained weights.
 frame counts. Add `--serial` to the host's `--video-stream` command to compare
 with serial scheduling. CPU checks require no board: `make -C sw test`.
 
+## Hardware emulation (hw_emu)
+
+Hardware emulation runs the RTL and modeled memories on the CPU; no U200 is
+required. Install Vitis/Vivado 2024.2, XRT and the same U200 platform. A separate
+`-t hw_emu` FIACCEL xclbin is required; `prebuilt/FIACCEL.xclbin` is the physical
+board image. This repository does not include a current hw_emu binary, and its
+encrypted RTL remains simulation-only.
+
+From the repository root, prepare the environment and run the configuration smoke:
+
+```bash
+source /path/to/Vitis/2024.2/settings64.sh
+source /opt/xilinx/xrt/setup.sh
+make -C sw host
+mkdir -p build/hw_emu
+cp /path/to/hw_emu/FIACCEL.xclbin build/hw_emu/FIACCEL.xclbin
+emconfigutil --platform xilinx_u200_gen3x16_xdma_2_202110_1 --od build/hw_emu
+printf '[Emulation]\ndebug_mode=off\naliveness_message_interval=30\n' > build/hw_emu/xrt.ini
+export XCL_EMULATION_MODE=hw_emu
+export EMCONFIG_PATH="$PWD/build/hw_emu"
+export XRT_INI_PATH="$PWD/build/hw_emu/xrt.ini"
+FIACCEL_CONFIG_SMOKE=1 FIACCEL_TIMEOUT_SECONDS=120 \
+  build/u200/host build/hw_emu/FIACCEL.xclbin
+```
+
+The smoke command prints `PASS configuration/control/m00 AXI smoke only`.
+To exercise coefficient loading, warm-up, interpolation and video output,
+start with two Full-HD source frames:
+
+```bash
+unset FIACCEL_CONFIG_SMOKE
+ffmpeg -nostdin -i input_1080p.mp4 -frames:v 2 -an \
+  -c:v libx264 -crf 0 -threads 2 build/hw_emu/input_2frames.mp4
+FIACCEL_TIMEOUT_SECONDS=43200 python3 sw/video/interpolate_video.py \
+  build/hw_emu/input_2frames.mp4 build/hw_emu/output.mp4 \
+  --xclbin build/hw_emu/FIACCEL.xclbin \
+  --host build/u200/host --weights weights/u200_int8/config.hex
+unset XCL_EMULATION_MODE EMCONFIG_PATH XRT_INI_PATH
+```
+
+Two input frames produce four output frames, including one midpoint and the
+final held original. Logs and frame counts are in
+`build/hw_emu/output.mp4.fiaccel/`. Full-HD emulation can take hours; its
+runtime and modeled-memory cycle counts do not establish board throughput.
+Clear the emulation environment before returning to physical-board execution.
+
 ## Hardware build configuration
 
 The completed development build used three 32-bit AXI masters, bursts up to
