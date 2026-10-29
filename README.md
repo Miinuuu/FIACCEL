@@ -15,7 +15,7 @@ modules** in [`rtl_vp/`](rtl_vp/), with XSim simulation-only access.
 
 [![Original and FPGA-interpolated video](media/demo_preview.jpg)](media/fiaccel_u200_demo.mp4)
 
-[Watch / download MP4](media/fiaccel_u200_demo.mp4) · [Board and build](hardware/u200/README.md) · [Trained INT8 weights](weights/u200_int8/README.md)
+[Watch / download MP4](media/fiaccel_u200_demo.mp4) · [U200 build image](https://github.com/Miinuuu/FIACCEL/raw/refs/heads/main/hardware/u200/prebuilt/FIACCEL.xclbin) · [Board guide](hardware/u200/README.md) · [INT8 weights](weights/u200_int8/README.md)
 
 Full-HD **30 fps input → 60 fps output video**, using a trained INT8 model on
 Alveo U200 at **300 MHz**. Six reference frames matched byte for byte;

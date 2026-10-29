@@ -7,9 +7,18 @@ import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
+DEVICE_IMAGE = 'hardware/u200/prebuilt/FIACCEL.xclbin'
+DEVICE_IMAGE_SHA256 = '27bbf5cc8098762fab3396f54c55d26a38a7b618f70b14f7fc37963051d78bda'
 
 
 def check():
+    image = ROOT/DEVICE_IMAGE
+    image_manifest = json.loads(image.with_name('manifest.json').read_text())
+    if (hashlib.sha256(image.read_bytes()).hexdigest() != DEVICE_IMAGE_SHA256 or
+            image_manifest['sha256'] != DEVICE_IMAGE_SHA256 or
+            image_manifest['bytes'] != image.stat().st_size or
+            image_manifest['file'] != image.name):
+        raise ValueError('Prebuilt U200 image checksum/manifest mismatch')
     manifest = json.loads((ROOT/'rtl_vp/manifest.json').read_text())
     listed = (ROOT/'rtl_vp/files.f').read_text().splitlines()
     actual = {str(p.relative_to(ROOT)) for p in (ROOT/'rtl_vp').glob('*.vp')}
@@ -18,7 +27,7 @@ def check():
     forbidden = {'.v', '.vhd', '.vhdl', '.lic', '.dcp', '.edf', '.edn', '.bit', '.xo', '.xclbin', '.rpt', '.log', '.jou', '.pb'}
     for folder in ('rtl_vp', 'hardware'):
         for path in (ROOT/folder).rglob('*'):
-            if path.is_file() and path.suffix.lower() in forbidden:
+            if path.is_file() and path.suffix.lower() in forbidden and str(path.relative_to(ROOT)) != DEVICE_IMAGE:
                 raise ValueError('Private/generated artifact in public package: '+str(path.relative_to(ROOT)))
     for name in listed:
         path = ROOT/name
@@ -40,9 +49,9 @@ def check():
     for name in filter(None, tracked):
         if not (ROOT/name).is_file():
             continue
-        if name.startswith('rtl/') or Path(name).suffix.lower() in forbidden:
+        if name != DEVICE_IMAGE and (name.startswith('rtl/') or Path(name).suffix.lower() in forbidden):
             raise ValueError('Tracked private/generated artifact: '+name)
-    print('PASS: 30 encrypted modules; matching SHA-256/list; simulation-only rights; no private hardware artifacts')
+    print('PASS: 30 encrypted modules; simulation-only rights; approved U200 image checksum; no other private hardware artifacts')
 
 
 if __name__ == '__main__':
