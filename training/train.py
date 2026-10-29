@@ -6,8 +6,8 @@ import pytorch_lightning as pl
 import torch
 import torch.distributed
 import wandb
-from datamodules.video_data_api import VideoData, VideoDataset
-from model_lightning import FIACCELModule
+from training.data.video_data_api import VideoData, VideoDataset
+from training.lightning import FIACCELModule
 from omegaconf import DictConfig
 from pytorch_lightning import LightningDataModule, Trainer, seed_everything
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
@@ -15,7 +15,7 @@ from pytorch_lightning.loggers.wandb import WandbLogger
 from pytorch_lightning.loggers import CSVLogger
 from torch import Tensor
 from torchvision.utils import make_grid
-from utils.hydra_tools import OmegaConf
+from training.utils.hydra_tools import OmegaConf
 import numpy as np
 import os
 import time

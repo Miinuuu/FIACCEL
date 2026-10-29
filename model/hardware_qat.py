@@ -7,7 +7,7 @@ from torch import nn
 from torch.nn import functional as F
 
 from .flow_estimation import _FeatureStream
-from model_pipeline import FIACCELPipeline
+from model.pipeline import FIACCELPipeline
 
 NAMES = ("enc.0", "enc.2", "enc.4", "aspp1.0", "aspp2.0", "aspp3.0",
          "aspp4.0", "shrink.0", "dec.0", "dec.2", "dec.4", "output.0")

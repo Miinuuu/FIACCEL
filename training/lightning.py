@@ -4,12 +4,12 @@ import pytorch_lightning
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
-from datamodules.video_data_api import VideoData
-from model_pipeline import FIACCELPipeline
+from training.data.video_data_api import VideoData
+from model.pipeline import FIACCELPipeline
 from omegaconf import DictConfig
 from torch import Tensor
 from torchmetrics.functional.image import peak_signal_noise_ratio
-from utils.hydra_tools import OmegaConf  # ! Needed for resolvets to take effect
+from training.utils.hydra_tools import OmegaConf  # ! Needed for resolvets to take effect
 from model.loss import LapLoss
 
 

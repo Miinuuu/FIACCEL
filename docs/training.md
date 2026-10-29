@@ -5,10 +5,10 @@
 ## Environment
 
 The Python model and the protected RTL demo have separate dependencies.
-For training, review the PyTorch/CUDA versions in `fiaccel.yaml` for your machine:
+For training, review the PyTorch/CUDA versions in `training/environment.yaml` for your machine:
 
 ```bash
-conda env create -f fiaccel.yaml
+conda env create -f training/environment.yaml
 conda activate fiaccel
 ```
 
@@ -19,7 +19,7 @@ it is not required for the XSim demo.
 ## Dataset
 
 Use Vimeo-90K triplets and set `data_dir` in
-[`config/datamodule/vimeo.yaml`](../config/datamodule/vimeo.yaml).
+[`training/config/datamodule/vimeo.yaml`](../training/config/datamodule/vimeo.yaml).
 Update checkpoint directories, Hydra output directories and logging settings
 for your environment before starting a run.
 
@@ -31,7 +31,7 @@ make train_int
 Hydra overrides can be supplied directly:
 
 ```bash
-python model_train.py --config-name train_config_int ngpu=1 training_loop.train_batch_size=8
+python -m training.train --config-name train_config_int ngpu=1 training_loop.train_batch_size=8
 ```
 
 ### H200 INT8 QAT
@@ -53,7 +53,7 @@ at `/data/jmw/fiaccel/.venv`:
 
 ```bash
 tmux new-session -d -s fiaccel_qat \
-  'bash /data/jmw/fiaccel/src/scripts/train_h200_qat.sh'
+  'bash /data/jmw/fiaccel/src/training/scripts/train_h200_qat.sh'
 tmux attach -t fiaccel_qat
 ```
 
@@ -66,7 +66,7 @@ scheduler states:
 
 ```bash
 FIACCEL_RUN_DIR=/data/jmw/fiaccel/runs/qat_RUN FIACCEL_RESUME=1 \
-  bash /data/jmw/fiaccel/src/scripts/train_h200_qat.sh
+  bash /data/jmw/fiaccel/src/training/scripts/train_h200_qat.sh
 ```
 
 Resuming creates a separate `source_resume_*` snapshot and retains the
@@ -89,11 +89,11 @@ checkpoint's mapped hardware coefficients, retaining identical integer values
 and shifts:
 
 ```bash
-python scripts/prepare_hardware_qat.py \
+python training/scripts/prepare_hardware_qat.py \
   --mapping /data/jmw/fiaccel/exports/qat_10ep_20261029_0919/quantized_model.json \
   --output /data/jmw/fiaccel/hw_qat_plain_init
 FIACCEL_TRAIN_CONFIG=train_config_h200_hwqat \
-  bash scripts/train_h200_qat.sh
+  bash training/scripts/train_h200_qat.sh
 ```
 
 The fine-tuning profile uses two H200 GPUs, a total batch of 32, ten epochs
@@ -107,7 +107,7 @@ are separate artifacts and are not part of this model or its reported results.
 ## Current model interface
 
 The head produces `[flow_x, flow_y, mask]` with a HardTanh activation.
-The synthesis pipeline in `model_pipeline.py` converts those channels to an
+The synthesis pipeline in `model/pipeline.py` converts those channels to an
 intermediate image at `t=0.5`. A five-channel checkpoint must be converted or
 retrained for this model interface; silently truncating the head is unsupported.
 
@@ -124,7 +124,7 @@ and quantization settings.
 
 ## Results and figures
 
-<img src="../fig/val_psnr.png" alt="Research training validation PSNR curve" width="720">
+<img src="assets/val_psnr.png" alt="Research training validation PSNR curve" width="720">
 
 The curve is a research training artifact. The public RTL demo uses synthetic
 weights and verifies arithmetic/transport against a supplied small fixture;

@@ -15,7 +15,7 @@ defaults:
   - test_datamodule:  # by default, no testing at the end of training
 
 model:
-  _target_: model_pipeline.FIACCELPipeline
+  _target_: model.pipeline.FIACCELPipeline
   flow_estimation: ${flow_estimation}
 
 training_loop:

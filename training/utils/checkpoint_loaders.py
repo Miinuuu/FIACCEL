@@ -9,7 +9,7 @@ import sys
 import hydra
 import torch
 import yaml
-from model_pipeline import VCTPipeline
+from model.pipeline import FIACCELPipeline
 from omegaconf import DictConfig
 
 
@@ -19,7 +19,7 @@ def load_model_checkpoint_from_config(
     path_to_config: str,
     device: str = "cpu",
     save_copy_of_ckpt: bool = False,
-) -> VCTPipeline:
+) -> FIACCELPipeline:
     """
     Load the model checkpoint specified in 'path_to_checkpoint' using the config
         specified in 'path_to_config'

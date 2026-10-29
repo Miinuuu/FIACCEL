@@ -14,7 +14,7 @@ Tested toolchain: **Vivado 2024.2 on Linux**, plus Python 3 (standard library on
 Source your installation's `settings64.sh`, then run from the repository root:
 
 ```bash
-python3 hardware/scripts/run_xsim.py
+python3 hardware/sim/run_xsim.py
 ```
 
 The command verifies encrypted-file checksums, compiles the protected implementation
@@ -28,7 +28,7 @@ pixels. The per-step logs and `rtl_output.hex` are stored in the same directory.
 To exercise another AXI master data width:
 
 ```bash
-python3 hardware/scripts/run_xsim.py --data-width 256 --output build/public_xsim_256
+python3 hardware/sim/run_xsim.py --data-width 256 --output build/public_xsim_256
 ```
 
 ## Observe signals
@@ -67,13 +67,12 @@ timing closure, paper PSNR, or internal flow values.
 
 | Artifact or operation | Included / allowed |
 |---|---|
-| Encrypted implementation (`../rtl_vp/*.vp`) | Yes |
+| Encrypted implementation (`../rtl_vp/`) | Yes |
 | Testbench, memory model, synthetic fixture | Readable |
 | XSim behavioral simulation | Allowed |
 | Simulation debug ports and WDB recording | Allowed |
 | Synthesis and implementation | Disabled by encryption rights |
 | Netlist export and bitstream generation | Disabled by encryption rights |
-| RTL source, utilization reports, DCP, bitstream, license files | Not included |
 | Verilator / Icarus execution of these encrypted files | Not supported by this package |
 
 The published paper describes an Alveo U250 design. This evaluation package is
@@ -89,9 +88,9 @@ implementation properties are impossible to infer from interfaces or behavior.
 ```text
 rtl_vp/             # 30 protected Verilog modules, source list and SHA-256 manifest
 hardware/
-├── fixtures/smoke/  # deterministic inputs and expected results
-├── scripts/         # XSim command-line runner
-└── tb/              # readable interface-only verification
+├── sim/             # XSim runner, tb/ and fixtures/smoke/
+├── scripts/         # public-package checker
+└── u200/            # board / hw_emu images and run guide
 ```
 
 AMD documents the format and tool rights in

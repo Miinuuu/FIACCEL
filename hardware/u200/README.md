@@ -5,7 +5,7 @@
 **Board build image:** [Download FIACCEL.xclbin](https://github.com/Miinuuu/FIACCEL/raw/refs/heads/main/hardware/u200/prebuilt/FIACCEL.xclbin)
 — 60.3 MB, U200 / 300 MHz. [Image manifest and SHA-256](prebuilt/manifest.json).
 
-<img src="../../fig/alveo_u200.jpeg" width="640" alt="Alveo U200 installed in the server">
+<img src="../../docs/assets/alveo_u200.jpeg" width="640" alt="Alveo U200 installed in the server">
 
 Alveo U200 installed in the server.
 

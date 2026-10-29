@@ -4,7 +4,7 @@
 
 ## Accelerator
 
-![FIACCEL architecture](../fig/fiaccel_architecture.svg)
+![FIACCEL architecture](assets/fiaccel_architecture.svg)
 
 The layout follows Figure 2(a) of the [FIACCEL paper](https://doi.org/10.1109/TCSII.2023.3329966),
 redrawn against the current RTL and Python model. The three encoder stages feed
@@ -25,7 +25,7 @@ frame initializes history; subsequent frames produce midpoint outputs.
 
 ## Convolution core
 
-![FIACCEL convolution core](../fig/fiaccel_conv_core.svg)
+![FIACCEL convolution core](assets/fiaccel_conv_core.svg)
 
 The layout follows Figure 2(b): Loader → banked FM/WT buffers → Fetcher/holders
 → MACs → reduction → partial sums → scaling and activation → output buffer.
@@ -47,19 +47,19 @@ logic collapsed. Open an SVG to zoom into signal names.
 
 | View | Module connections |
 |---|---|
-| [FIACCEL top](../fig/fiaccel_vivado_top.svg) | AXI-Lite control and the `Top` core wrapper |
-| [Core integration](../fig/fiaccel_vivado_core.svg) | Input/output DMA, `fi_engine`, and the three `fi_axi` masters |
+| [FIACCEL top](assets/fiaccel_vivado_top.svg) | AXI-Lite control and the `Top` core wrapper |
+| [Core integration](assets/fiaccel_vivado_core.svg) | Input/output DMA, `fi_engine`, and the three `fi_axi` masters |
 
 ## Code correspondence
 
 | Figure block | Protected RTL | Public model |
 |---|---|---|
-| Encoder, HDC branches, shrink, decoder, head | `fi_network.vp`, `fi_conv.vp` | `model/flow_estimation.py` |
-| FMR / selective transfer | `fi_fmr.vp` | `model/selective_transfer.py` |
-| Frame synthesizer | `fi_synth.vp`, `fi_blend_pipe.vp` | `model_pipeline.py` |
-| FM/WT storage and loading | `fi_fm_*.vp`, `fi_wt_*.vp`, `fi_weights.vp` | — |
-| MAC and reduction | `fi_dsp_mac4.vp`, `fi_reduce_tree.vp` | — |
-| Output queue / elastic and credit transport | `fi_vector_fifo.vp`, `fi_skid_buffer.vp`, `fi_slr_credit.vp` | — |
+| Encoder, HDC branches, shrink, decoder, head | `rtl_vp/network/fi_network.vp`, `rtl_vp/network/fi_conv.vp` | `model/flow_estimation.py` |
+| FMR / selective transfer | `rtl_vp/network/fi_fmr.vp` | `model/selective_transfer.py` |
+| Frame synthesizer | `rtl_vp/synthesis/fi_synth.vp`, `rtl_vp/synthesis/fi_blend_pipe.vp` | `model/pipeline.py` |
+| FM/WT storage and loading | `rtl_vp/memory/fi_fm_*.vp`, `rtl_vp/memory/fi_wt_*.vp`, `rtl_vp/memory/fi_weights.vp` | — |
+| MAC and reduction | `rtl_vp/pe/fi_dsp_mac4.vp`, `rtl_vp/pe/fi_reduce_tree.vp` | — |
+| Output queue / elastic and credit transport | `rtl_vp/fifo/fi_vector_fifo.vp`, `rtl_vp/fifo/fi_skid_buffer.vp`, `rtl_vp/fifo/fi_slr_credit.vp` | — |
 
 These diagrams describe the current implementation using the paper's layout.
 They do not assert that the U200-derived evaluation reproduces the published
