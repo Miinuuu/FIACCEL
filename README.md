@@ -30,7 +30,27 @@ the video run produced **120 output frames from 60 input frames**.
 
 </details>
 
-## Run
+## Run on U200
+
+Requires Linux, an idle **Alveo U200**, XRT headers/libraries, a C++17 compiler,
+Python 3 and FFmpeg/FFprobe. Use the [compatible platform](hardware/u200/README.md#validated-on-hardware)
+and run from the repository root:
+
+```bash
+source /opt/xilinx/xrt/setup.sh
+unset XCL_EMULATION_MODE FIACCEL_CONFIG_SMOKE
+make -C sw host
+make check-public
+python3 sw/video/interpolate_video.py input_1080p.mp4 output_1080p60.mp4 \
+  --xclbin hardware/u200/prebuilt/FIACCEL.xclbin \
+  --host build/u200/host --weights weights/u200_int8/config.hex
+```
+
+Input must be **1920×1080**. A 30 fps source produces a 60 fps output file,
+with original frames and learned midpoints. Logs and frame counts are saved in
+`output_1080p60.mp4.fiaccel/`. See the [board guide](hardware/u200/README.md) for details.
+
+## RTL simulation
 
 Requires **Vivado 2024.2 (Linux)** on `PATH` and **Python 3**.
 
