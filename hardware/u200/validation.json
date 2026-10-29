@@ -39,7 +39,7 @@
   },
   "media_sha256": {
     "fiaccel_u200_demo.mp4": "637d5cb712f9aea52c3f792a785fba3411dc6f949f6352b4583433d723b9f1e7",
-    "demo_preview.jpg": "cc76846053f241a2dfdab4b714d09b5687ba7ed4f5a00e66c0b2c889aaa69106"
+    "demo_preview.gif": "64db5a7f17ee52983ab34b6cbc5b2b6f5a2de2ab68552c0bcdf895e7c2b5d6c6"
   },
   "host_pipeline": {
     "result": "PASS",
