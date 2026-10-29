@@ -129,3 +129,8 @@ and quantization settings.
 The curve is a research training artifact. The public RTL demo uses synthetic
 weights and verifies arithmetic/transport against a supplied small fixture;
 it does not measure learned interpolation quality.
+
+## Export for deployment
+
+See the [weight export and mapping guide](../sw/verification/README.md) for
+hardware-QAT checkpoint export, legacy Brevitas scale mapping and board fixtures.
