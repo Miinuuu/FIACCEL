@@ -11,6 +11,16 @@ INT8 frame interpolation with feature reuse, selective DRAM transfer,
 row-wise fusion and kernel decomposition. RTL is provided as **30 encrypted
 modules** in [`rtl_vp/`](rtl_vp/), with XSim simulation-only access.
 
+## U200 demo
+
+[![Original and FPGA-interpolated video](media/demo_preview.jpg)](media/fiaccel_u200_demo.mp4)
+
+[Watch / download MP4](media/fiaccel_u200_demo.mp4) · [Board and build](hardware/u200/README.md) · [Trained INT8 weights](weights/u200_int8/README.md)
+
+Full-HD **30 fps input → 60 fps output video**, using a trained INT8 model on
+Alveo U200 at **300 MHz**. Six reference frames matched byte for byte;
+the video run produced **120 output frames from 60 input frames**.
+
 <details>
 <summary>Vivado top schematic</summary>
 
@@ -41,6 +51,7 @@ This demo checks functionality; see the [RTL guide](hardware/README.md) for scop
 | `rtl_vp/` | Encrypted RTL and checksums |
 | `hardware/` | AXI testbench, fixtures and simulator runner |
 | `sw/` | U200 XRT host and video I/O |
+| `weights/u200_int8/`, `media/` | Trained integer model and board demo |
 | `reference_papers/` | Reference papers |
 | `model/`, `model_pipeline.py` | Network, selective transfer and image synthesis |
 | `config/`, `datamodules/`, `model_train.py` | Training |

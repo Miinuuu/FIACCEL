@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-29",
+  "board": "AMD Alveo U200",
+  "toolchain": "Vivado / Vitis 2024.2",
+  "platform": "xilinx_u200_gen3x16_xdma_2_202110_1",
+  "implemented_clock_mhz": 300,
+  "weights_sha256": "84aed863ea2b4c4bc883544547bd1aedacc6780fb10c6a22c88896507148644a",
+  "checkpoint_sha256": "c80b9445c893d64f088bbebc41951801e6493b32fac9618c9ca331389e791bcd",
+  "functional_check": {
+    "result": "PASS",
+    "input_frames": 3,
+    "output_frames": 6,
+    "comparison": {
+      "exact": true,
+      "actual_bytes": 37324800,
+      "expected_bytes": 37324800,
+      "differing_rgb_bytes": 0,
+      "max_rgb_error": 0,
+      "first_difference_byte": null
+    },
+    "selective_transfer": "Persistent per-vector representatives; compare upper three bits across all 32 channels"
+  },
+  "video": {
+    "result": "PASS",
+    "width": 1920,
+    "height": 1080,
+    "input_fps": "30",
+    "output_fps": "60",
+    "input_frames": 60,
+    "output_frames": 120,
+    "interpolated_frames": 59,
+    "last_frame": "repeated once to preserve duration"
+  },
+  "build": {
+    "result": "PASS",
+    "elapsed": "2h 37m 38s",
+    "requested_clock_mhz": 300,
+    "frequency_reduction": false
+  },
+  "media_sha256": {
+    "fiaccel_u200_demo.mp4": "637d5cb712f9aea52c3f792a785fba3411dc6f949f6352b4583433d723b9f1e7",
+    "demo_preview.jpg": "cc76846053f241a2dfdab4b714d09b5687ba7ed4f5a00e66c0b2c889aaa69106"
+  }
+}

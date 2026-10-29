@@ -1,0 +1,102 @@
+{
+  "depths": [
+    8,
+    16,
+    32,
+    64,
+    32,
+    16,
+    8
+  ],
+  "input": "signed RGB-128",
+  "output_activation": "HardTanh",
+  "output": "3 signed int16 channels, Q1.14",
+  "configuration": "48-bit: [47] shift, [46:43] layer, [42:11] address, [7:0] data",
+  "layers": [
+    {
+      "id": 0,
+      "name": "enc.0",
+      "count": 216,
+      "shift": 9
+    },
+    {
+      "id": 1,
+      "name": "enc.2",
+      "count": 1152,
+      "shift": 8
+    },
+    {
+      "id": 2,
+      "name": "enc.4",
+      "count": 4608,
+      "shift": 6
+    },
+    {
+      "id": 3,
+      "name": "aspp1.0",
+      "count": 36864,
+      "shift": 10
+    },
+    {
+      "id": 4,
+      "name": "aspp2.0",
+      "count": 36864,
+      "shift": 9
+    },
+    {
+      "id": 5,
+      "name": "aspp3.0",
+      "count": 36864,
+      "shift": 9
+    },
+    {
+      "id": 6,
+      "name": "aspp4.0",
+      "count": 36864,
+      "shift": 8
+    },
+    {
+      "id": 7,
+      "name": "shrink.0",
+      "count": 16384,
+      "shift": 7
+    },
+    {
+      "id": 8,
+      "name": "dec.0",
+      "count": 18432,
+      "shift": 8
+    },
+    {
+      "id": 9,
+      "name": "dec.2",
+      "count": 4608,
+      "shift": 7
+    },
+    {
+      "id": 10,
+      "name": "dec.4",
+      "count": 1152,
+      "shift": 9
+    },
+    {
+      "id": 11,
+      "name": "output.0",
+      "count": 216,
+      "shift": 5
+    }
+  ],
+  "source": "hardware-compatible QAT, final epoch 10",
+  "source_sha256": "c80b9445c893d64f088bbebc41951801e6493b32fac9618c9ca331389e791bcd",
+  "normalization": "zero-offset channel gain folded before INT8 quantization",
+  "batch_dependent_normalization": false,
+  "normalization_statistics": "frozen after calibration",
+  "normalization_layers": 12,
+  "bias_parameters": 0,
+  "arithmetic": "certified integer sums; floor/right-shift; UINT8 hidden; Q1.14 head; Q8 warp and RGB8 blend",
+  "configuration_records": 194236,
+  "sha256": {
+    "config.hex": "84aed863ea2b4c4bc883544547bd1aedacc6780fb10c6a22c88896507148644a",
+    "quantized_model.json": "745ec082f3e84c6b3085dde12a6fa466e782e44974a56d8f92d0b9cf4d3897cc"
+  }
+}
