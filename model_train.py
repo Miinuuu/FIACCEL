@@ -19,6 +19,7 @@ from utils.hydra_tools import OmegaConf
 import numpy as np
 import os
 import time
+import json
 #os.environ["TORCH_CPP_LOG_LEVEL"]="INFO"
 #os.environ["TORCH_DISTRIBUTED_DEBUG"] = "DETAIL"
 #os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
@@ -46,6 +47,26 @@ class TrainingStatusCallback(pl.Callback):
             psnr = trainer.callback_metrics.get("val_PSNR", float("nan"))
             print(f"validation step={trainer.global_step} val_PSNR={float(psnr):.3f} "
                   f"validation_s={time.monotonic()-self.validation_started_at:.1f}", flush=True)
+
+
+class HardwareExportCallback(pl.Callback):
+    def on_validation_end(self, trainer, pl_module):
+        if not trainer.is_global_zero or trainer.sanity_checking:
+            return
+        from sw.verification.export_weights import export
+        flow = pl_module.model.flow_estimation
+        document = flow.export_document()
+        directory = Path.cwd()/"hardware"/f"epoch_{trainer.current_epoch+1:02d}"
+        count = export(document, directory)
+        (directory/"quantized_model.json").write_text(json.dumps(document)+"\n")
+        path = directory/"manifest.json"
+        manifest = json.loads(path.read_text())
+        manifest.update(input="signed RGB-128", normalization="none",
+                        step=trainer.global_step, epoch=trainer.current_epoch+1,
+                        quantization="INT8 weights; floor/right-shift; UINT8 hidden; Q1.14 head",
+                        synthesis="integer Q8 coordinates and rounded RGB8 blending")
+        path.write_text(json.dumps(manifest, indent=2)+"\n")
+        print(f"Hardware export step={trainer.global_step} writes={count} directory={directory}", flush=True)
 
 
 class WandbImageCallback(pl.Callback):
@@ -180,6 +201,7 @@ def main(cfg: DictConfig) -> None:
         callbacks=[
             TrainingStatusCallback(),
             image_logger,  # LogPredictionsCallback()
+            *([HardwareExportCallback()] if cfg.mode == "hw_int" else []),
             LearningRateMonitor(),
             ModelCheckpoint(**cfg.checkpoint.callback),
         ],

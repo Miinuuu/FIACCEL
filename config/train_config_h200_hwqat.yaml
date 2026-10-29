@@ -1,0 +1,28 @@
+defaults:
+  - train_config_h200_qat
+  - override flow_estimation: hardware
+  - override scheduler: cosine
+  - _self_
+
+mode: hw_int
+model:
+  _target_: model.hardware_qat.HardwarePipeline
+
+training_loop:
+  learning_rate: 2e-5
+  lr_annealing_frequency: 1
+
+scheduler:
+  eta_min: 2e-6
+
+trainer:
+  max_steps: 16040
+  max_epochs: 10
+  benchmark: false
+
+logger:
+  group: h200_hardware_qat
+
+hydra:
+  run:
+    dir: /data/jmw/fiaccel/runs/hwqat_${now:%Y%m%d_%H%M%S}

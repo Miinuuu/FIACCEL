@@ -1,0 +1,3 @@
+_target_: model.hardware_qat.HardwareFlow
+initial_state: /data/jmw/fiaccel/hw_qat_plain_init/initial_state.pt
+selective_transfer: true
