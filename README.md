@@ -52,19 +52,20 @@ with original frames and learned midpoints. Logs and frame counts are saved in
 
 ## Hardware emulation (hw_emu)
 
-Requires **Vitis/Vivado 2024.2**, XRT and a separately prepared **hw_emu xclbin**.
-The published U200 board image is for physical hardware. After sourcing the
-Vitis and XRT environment scripts, run:
+Requires **Vitis/Vivado 2024.2** and XRT. The [hw_emu image and settings](hardware/u200/hw_emu/)
+are included; the separate U200 board image is for physical hardware.
+After sourcing the Vitis and XRT environment scripts, run:
 
 ```bash
 make -C sw host
 mkdir -p build/hw_emu
-cp /path/to/hw_emu/FIACCEL.xclbin build/hw_emu/FIACCEL.xclbin
-emconfigutil --platform xilinx_u200_gen3x16_xdma_2_202110_1 --od build/hw_emu
+cp hardware/u200/hw_emu/{FIACCEL.xclbin,emconfig.json,xrt.ini} build/hw_emu/
+make check-public
 export XCL_EMULATION_MODE=hw_emu EMCONFIG_PATH="$PWD/build/hw_emu"
+export XRT_INI_PATH="$EMCONFIG_PATH/xrt.ini"
 FIACCEL_CONFIG_SMOKE=1 FIACCEL_TIMEOUT_SECONDS=120 \
   build/u200/host build/hw_emu/FIACCEL.xclbin
-unset XCL_EMULATION_MODE
+unset XCL_EMULATION_MODE EMCONFIG_PATH XRT_INI_PATH
 ```
 
 This checks configuration/control AXI. See the [hw_emu guide](hardware/u200/README.md#hardware-emulation-hw_emu)

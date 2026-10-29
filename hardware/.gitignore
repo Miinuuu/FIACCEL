@@ -1,4 +1,4 @@
-# Public hardware contains protected implementation and readable verification only.
+# Protected RTL, verification and checksum-approved device/emulation images.
 *.v
 *.vhd
 *.vhdl
@@ -8,6 +8,7 @@
 *.bit
 *.xclbin
 !/u200/prebuilt/FIACCEL.xclbin
+!/u200/hw_emu/FIACCEL.xclbin
 *.lic
 *.rpt
 *.log

@@ -55,10 +55,12 @@ with serial scheduling. CPU checks require no board: `make -C sw test`.
 ## Hardware emulation (hw_emu)
 
 Hardware emulation runs the RTL and modeled memories on the CPU; no U200 is
-required. Install Vitis/Vivado 2024.2, XRT and the same U200 platform. A separate
-`-t hw_emu` FIACCEL xclbin is required; `prebuilt/FIACCEL.xclbin` is the physical
-board image. This repository does not include a current hw_emu binary, and its
-encrypted RTL remains simulation-only.
+required. Install Vitis/Vivado 2024.2 and XRT. The compiled
+[hw_emu image](hw_emu/FIACCEL.xclbin), `emconfig.json` and `xrt.ini` are included
+in [`hw_emu/`](hw_emu/). The image uses the current 30-module RTL and 300 MHz
+modeled clocks; its relocated configuration/control/M00 AXI smoke test passed.
+[Manifest and checksums](hw_emu/manifest.json). The separate
+`prebuilt/FIACCEL.xclbin` is for physical hardware.
 
 From the repository root, prepare the environment and run the configuration smoke:
 
@@ -67,9 +69,8 @@ source /path/to/Vitis/2024.2/settings64.sh
 source /opt/xilinx/xrt/setup.sh
 make -C sw host
 mkdir -p build/hw_emu
-cp /path/to/hw_emu/FIACCEL.xclbin build/hw_emu/FIACCEL.xclbin
-emconfigutil --platform xilinx_u200_gen3x16_xdma_2_202110_1 --od build/hw_emu
-printf '[Emulation]\ndebug_mode=off\naliveness_message_interval=30\n' > build/hw_emu/xrt.ini
+cp hardware/u200/hw_emu/{FIACCEL.xclbin,emconfig.json,xrt.ini} build/hw_emu/
+make check-public
 export XCL_EMULATION_MODE=hw_emu
 export EMCONFIG_PATH="$PWD/build/hw_emu"
 export XRT_INI_PATH="$PWD/build/hw_emu/xrt.ini"
