@@ -14,5 +14,5 @@ Changes: excerpt selection, frame interpolation, scaling, comparison layout,
 labels, repeated playback and slow motion. The derived demo and preview retain
 the CC BY 3.0 attribution above.
 
-The board product image in `fig/alveo_u200.jpg` is a separate AMD image;
-its source and credit appear in the [board guide](../hardware/u200/README.md).
+The U200 installation photo in `fig/alveo_u200.jpeg` is separate from the
+film footage and appears in the [board guide](../hardware/u200/README.md).

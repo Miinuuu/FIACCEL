@@ -5,9 +5,9 @@
 **Board build image:** [Download FIACCEL.xclbin](https://github.com/Miinuuu/FIACCEL/raw/refs/heads/main/hardware/u200/prebuilt/FIACCEL.xclbin)
 — 60.3 MB, U200 / 300 MHz. [Image manifest and SHA-256](prebuilt/manifest.json).
 
-<img src="../../fig/alveo_u200.jpg" width="420" alt="AMD Alveo U200 accelerator card, manufacturer product image">
+<img src="../../fig/alveo_u200.jpeg" width="640" alt="Alveo U200 installed in the server">
 
-AMD Alveo U200 product image, © AMD. [Image source](https://www.amd.com/en/products/accelerators/alveo/u200/a-u200-p64g-pq-g.html).
+Alveo U200 installed in the server.
 
 ## Validated on hardware
 
