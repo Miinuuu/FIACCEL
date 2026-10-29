@@ -21,3 +21,6 @@ Reference generation must retain selective-transfer feature representatives
 across frames. Model-specific RGB fixtures are supplied separately; the U200
 image is in `hardware/u200/prebuilt/`. The self-test checks device availability before programming and
 compares every output RGB byte. It requires no training framework.
+
+For checkpoint extraction and scale mapping, see the
+[weight export guide](../verification/README.md).
