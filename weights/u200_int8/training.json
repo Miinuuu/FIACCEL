@@ -1,0 +1,37 @@
+{
+  "result": "PASS",
+  "training_epochs": 10,
+  "training_steps": 16040,
+  "validation_samples": 3782,
+  "initial_integer_psnr_db": 28.907348826472436,
+  "final_integer_psnr_db": 30.71,
+  "baseline_brevitas_psnr_db": 31.073,
+  "normalization": "learned channel gain; frozen equal RMS reference/statistics; no batch-dependent normalization",
+  "rtl_changed": false,
+  "export_validation": {
+    "result": "PASS",
+    "weights": 194224,
+    "shifts": 12,
+    "quality": {
+      "samples": 32,
+      "split": "first Vimeo test triplets, center crop 256x256",
+      "model_psnr_db": 32.656769677996635,
+      "exported_psnr_db": 32.656769677996635,
+      "max_flow_code_error": 0,
+      "max_rgb_pixel_error": 0,
+      "scope": "integer model/reference, not board measurement"
+    }
+  },
+  "host_config_validation": {
+    "result": "PASS",
+    "configuration_records": 194236,
+    "weights": 194224,
+    "shifts": 12,
+    "validator": "sw/host/frame_io.cpp load_config"
+  },
+  "rtl_tested_checkpoint_epoch": 1,
+  "rtl_validation": "PASS",
+  "ood_generalization_evaluated": false,
+  "checkpoint_sha256": "c80b9445c893d64f088bbebc41951801e6493b32fac9618c9ca331389e791bcd",
+  "scope": "Recorded training/export validation; board measurements are documented separately."
+}
