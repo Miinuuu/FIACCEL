@@ -13,7 +13,7 @@ modules** in [`rtl_vp/`](rtl_vp/), with XSim simulation-only access.
 
 ## U200 demo
 
-[![Original and FPGA-interpolated video](media/demo_preview.jpg)](media/fiaccel_u200_demo.mp4)
+[![Animated preview: original and FPGA-interpolated video](media/demo_preview.gif)](media/fiaccel_u200_demo.mp4)
 
 [Watch / download MP4](media/fiaccel_u200_demo.mp4) · [U200 build image](https://github.com/Miinuuu/FIACCEL/raw/refs/heads/main/hardware/u200/prebuilt/FIACCEL.xclbin) · [Board guide](hardware/u200/README.md) · [INT8 weights](weights/u200_int8/README.md)
 
