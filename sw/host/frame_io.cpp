@@ -1,8 +1,9 @@
 #include "frame_io.h"
 #include <algorithm>
+#include <charconv>
 #include <fstream>
 #include <numeric>
-#include <sstream>
+#include <string_view>
 #include <stdexcept>
 
 namespace fiaccel {
@@ -22,16 +23,25 @@ std::vector<uint64_t> load_config(const std::string& path) {
     for(unsigned i=0;i<seen.size();++i)seen[i].resize(WeightCounts[i]);
     std::array<bool,12> shifts{};
     std::vector<uint64_t> records;
+    records.reserve(std::accumulate(WeightCounts.begin(),WeightCounts.end(),std::size_t(12)));
     std::string line;
     while(std::getline(input,line)) {
-        line=line.substr(0,line.find('#'));
-        std::istringstream words(line);
-        std::string word,extra;
-        if(!(words>>word))continue;
-        if(words>>extra)throw std::runtime_error("Expected one configuration word per line");
-        std::size_t used=0;
-        const uint64_t record=std::stoull(word,&used,16);
-        if(used!=word.size() || record>>48 || (record&0x700))throw std::runtime_error("Invalid 48-bit configuration word");
+        std::string_view word(line.data(),line.find('#')==std::string::npos ? line.size() : line.find('#'));
+        const auto first=word.find_first_not_of(" \t\r\n\v\f");
+        if(first==std::string_view::npos)continue;
+        word.remove_prefix(first);
+        const auto end=word.find_first_of(" \t\r\n\v\f");
+        if(end!=std::string_view::npos) {
+            if(word.find_first_not_of(" \t\r\n\v\f",end)!=std::string_view::npos)
+                throw std::runtime_error("Expected one configuration word per line");
+            word=word.substr(0,end);
+        }
+        if(word.front()=='+')word.remove_prefix(1);
+        if(word.size()>=2 && word[0]=='0' && (word[1]=='x' || word[1]=='X'))word.remove_prefix(2);
+        uint64_t record=0;
+        const auto parsed=std::from_chars(word.data(),word.data()+word.size(),record,16);
+        if(parsed.ec!=std::errc{} || parsed.ptr!=word.data()+word.size() || record>>48 || (record&0x700))
+            throw std::runtime_error("Invalid 48-bit configuration word");
         const unsigned layer=(record>>43)&15,address=(record>>11)&0xffffffffu;
         if(layer>=12)throw std::runtime_error("Invalid coefficient layer");
         if(record&(uint64_t(1)<<47)) {

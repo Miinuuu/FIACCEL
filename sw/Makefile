@@ -5,7 +5,9 @@ CXX ?= g++
 SOURCES := $(wildcard $(ROOT)/sw/host/*.cpp)
 HEADERS := $(wildcard $(ROOT)/sw/host/*.h)
 
-.PHONY: host
+.PHONY: host test
+test:
+	cd $(ROOT) && python3 -m unittest sw.verification.test_host_pipeline sw.verification.test_u200_model -v
 host: $(OUT)/host
 
 $(OUT)/host: $(SOURCES) $(HEADERS)

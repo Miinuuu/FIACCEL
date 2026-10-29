@@ -35,10 +35,18 @@ python3 sw/video/interpolate_video.py input_1080p.mp4 output_1080p60.mp4 \
   --host build/u200/host --weights weights/u200_int8/config.hex
 ```
 
-Frames pass through bounded pipes and recycled device buffers. The command
+Frames pass through bounded pipes. Three input BOs and two output BOs are
+allocated once and reused: the next input upload and previous output readback
+overlap the current FPGA command. Kernel commands remain ordered to preserve
+selective-transfer history. Host frame storage is also reused; memory use is
+independent of video length. The command
 writes frame counts and execution metadata beside the output video.
 The default fixed-pattern host self-test loads synthetic coefficients;
 the video command above loads the published trained weights.
+
+`HOST_PROFILE` reports measured stream time, while `VIDEO_SUMMARY` reports
+frame counts. Add `--serial` to the host's `--video-stream` command to compare
+with serial scheduling. CPU checks require no board: `make -C sw test`.
 
 ## Hardware build configuration
 
