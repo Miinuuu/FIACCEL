@@ -2,7 +2,9 @@
 #include "accelerator.h"
 #include "golden_reference.h"
 #include "raw_video_output.h"
+#include "video_pipeline.h"
 #include <algorithm>
+#include <chrono>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -38,7 +40,7 @@ int self_test(const std::string& xclbin,const std::string& output) {
              <<" frames_checked=2 nonzero_mask_pixels="<<nonzero<<'\n';
     return 0;
 }
-int video_stream(const std::string& xclbin,const std::string& config,bool strict) {
+int video_stream(const std::string& xclbin,const std::string& config,bool strict,bool serial) {
     RawVideoOutput video_output;
     // Validate every resident coefficient before touching the device.
     const auto records=load_config(config);
@@ -46,16 +48,23 @@ int video_stream(const std::string& xclbin,const std::string& config,bool strict
     device.configure(records);
     Rgb24Reader input(std::cin);Rgb24Writer output(video_output.stream());
     uint32_t max_cycles=0;uint64_t over_budget=0;
-    const auto counts=interpolate_stream(input,output,
+    const auto begin=std::chrono::steady_clock::now();
+    auto observe=[&](const CommandStats& stats) {
+        max_cycles=std::max(max_cycles,stats.cycles);
+        over_budget+=stats.cycles>CycleLimit;
+    };
+    const auto counts=serial ? interpolate_stream(input,output,
         [&](const Frame& first){device.warmup(first);},
         [&](const Frame& current){
             auto result=device.interpolate(current,"",strict);
-            max_cycles=std::max(max_cycles,result.stats.cycles);
-            over_budget+=result.stats.cycles>CycleLimit;
+            observe(result.stats);
             return std::move(result.pixels);
-        });
+        }) : interpolate_stream_pipelined(input,output,device,observe,strict);
     video_output.stream().flush();
     if(!video_output.stream())throw std::runtime_error("Cannot flush RGB24 output");
+    const double seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-begin).count();
+    std::cerr<<"HOST_PROFILE pipeline="<<(serial ? "serial" : "overlap")<<" stream_seconds="<<seconds
+             <<" interpolated_fps="<<counts.interpolated_frames/seconds<<'\n';
     std::cerr<<"VIDEO_SUMMARY input_frames="<<counts.input_frames<<" output_frames="<<counts.output_frames
              <<" interpolated_frames="<<counts.interpolated_frames<<" width="<<Width<<" height="<<Height
              <<" max_kernel_cycles="<<max_cycles<<" over_budget_frames="<<over_budget<<'\n';
@@ -63,6 +72,7 @@ int video_stream(const std::string& xclbin,const std::string& config,bool strict
 }
 }
 int main(int argc,char** argv) try {
+    std::ios::sync_with_stdio(false);std::cin.tie(nullptr);
     if(argc==5 && std::string(argv[1])=="--reference-only") {
         const auto mask=fiaccel::nonzero_reference(std::stoul(argv[2]),std::stoul(argv[3]));
         std::ofstream stream(argv[4],std::ios::binary);
@@ -74,17 +84,18 @@ int main(int argc,char** argv) try {
         return 0;
     }
     if(argc>=3 && std::string(argv[2])=="--video-stream") {
-        std::string weights;bool strict=false;
+        std::string weights;bool strict=false,serial=false;
         for(int i=3;i<argc;++i) {
             const std::string option=argv[i];
             if(option=="--weights" && i+1<argc)weights=argv[++i];
             else if(option=="--enforce-cycle-budget")strict=true;
+            else if(option=="--serial")serial=true;
             else throw std::runtime_error("Unknown video-stream option: "+option);
         }
         if(weights.empty())throw std::runtime_error("Video mode requires --weights config.hex");
-        return video_stream(argv[1],weights,strict);
+        return video_stream(argv[1],weights,strict,serial);
     }
-    if(argc<2 || argc>3)throw std::runtime_error("Usage: host XCLBIN [output.ppm] | host XCLBIN --video-stream --weights config.hex [--enforce-cycle-budget]");
+    if(argc<2 || argc>3)throw std::runtime_error("Usage: host XCLBIN [output.ppm] | host XCLBIN --video-stream --weights config.hex [--enforce-cycle-budget] [--serial]");
     return self_test(argv[1],argc==3 ? argv[2] : "synthesized.ppm");
 } catch(const std::exception& error) {
     std::cerr<<"FAIL: "<<error.what()<<'\n';return 1;

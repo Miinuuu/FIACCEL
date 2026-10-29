@@ -40,5 +40,21 @@
   "media_sha256": {
     "fiaccel_u200_demo.mp4": "637d5cb712f9aea52c3f792a785fba3411dc6f949f6352b4583433d723b9f1e7",
     "demo_preview.jpg": "cc76846053f241a2dfdab4b714d09b5687ba7ed4f5a00e66c0b2c889aaa69106"
+  },
+  "host_pipeline": {
+    "result": "PASS",
+    "input_device_buffers": 3,
+    "output_device_buffers": 2,
+    "ordered_kernel_commands": true,
+    "full_video_output_equivalence": {
+      "raw_rgb_bytes": 746496000,
+      "raw_rgb_sha256": "d86c542005ef014f4bb6ddfade0c8cc05d60bfdd1588faeef776ce90a987ba6d",
+      "mp4_sha256": "717848837488bc39e95520a052c3cb1c2fd287cb34fb74f071cf2fdd15b10e14"
+    },
+    "reference_rgb_bytes": 37324800,
+    "reference_match": true,
+    "single_frame_eof": "PASS",
+    "truncated_input_drain": "PASS",
+    "host_sha256": "d1fbd41d59c5275f80f49755dfe33e14964ac3dac1f6ccf3c486db68f8348b39"
   }
 }
