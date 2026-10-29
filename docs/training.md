@@ -72,6 +72,38 @@ FIACCEL_RUN_DIR=/data/jmw/fiaccel/runs/qat_RUN FIACCEL_RESUME=1 \
 Resuming creates a separate `source_resume_*` snapshot and retains the
 previous Hydra settings with that snapshot. A missing checkpoint is an error.
 
+### Hardware-compatible QAT fine-tuning
+
+`model/hardware_qat.py` keeps the same twelve convolutions, channel counts and
+three-channel head. It trains with signed `RGB-128`, INT8 weights, per-layer
+right shifts, floor and UINT8 saturation, and a Q1.14 head. Forward image
+synthesis uses the RTL's Q8 coordinates and rounded integer RGB blending;
+gradients use straight-through quantizers and a bilinear sampling surrogate.
+TF32 and transformed convolution algorithms are disabled. FP32 integer sums
+are certified by an absolute-sum bound, with FP64 fallback when needed.
+
+There are no BatchNorm, RMS or learned channel-gain modules. The only
+trainable parameters are the 194,224 convolution weights; the twelve shifts
+are fixed deployment parameters. Initialize directly from the earlier
+checkpoint's mapped hardware coefficients, retaining identical integer values
+and shifts:
+
+```bash
+python scripts/prepare_hardware_qat.py \
+  --mapping /data/jmw/fiaccel/exports/qat_10ep_20261029_0919/quantized_model.json \
+  --output /data/jmw/fiaccel/hw_qat_plain_init
+FIACCEL_TRAIN_CONFIG=train_config_h200_hwqat \
+  bash scripts/train_h200_qat.sh
+```
+
+The fine-tuning profile uses two H200 GPUs, a total batch of 32, ten epochs
+and 16,040 steps, and cosine learning-rate decay from 2e-5 to 2e-6. It starts
+a new optimizer from the inherited weights. Every epoch saves a checkpoint
+and exported `hardware/epoch_XX/config.hex` and `quantized_model.json`.
+Checkpoints contain the shadow weights and fixed shifts, so exact exports
+can also be regenerated after training. Earlier normalization/gain experiments
+are separate artifacts and are not part of this model or its reported results.
+
 ## Current model interface
 
 The head produces `[flow_x, flow_y, mask]` with a HardTanh activation.

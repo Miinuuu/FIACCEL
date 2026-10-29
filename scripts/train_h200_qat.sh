@@ -4,6 +4,7 @@ set -euo pipefail
 project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 training_root="${FIACCEL_TRAIN_ROOT:-/data/jmw/fiaccel}"
 python_bin="${FIACCEL_PYTHON:-${training_root}/.venv/bin/python}"
+train_config="${FIACCEL_TRAIN_CONFIG:-train_config_h200_qat}"
 run_dir="${FIACCEL_RUN_DIR:-${training_root}/runs/qat_$(date -u +%Y%m%d_%H%M%SZ)}"
 mkdir -p "$run_dir"
 resume_args=()
@@ -21,7 +22,7 @@ elif [[ -e "$source_dir" ]]; then
 fi
 mkdir "$source_dir"
 cp -a "$project_root/config" "$project_root/model" "$project_root/datamodules" \
-    "$project_root/utils" "$project_root/model_train.py" \
+    "$project_root/utils" "$project_root/sw" "$project_root/model_train.py" \
     "$project_root/model_pipeline.py" "$project_root/model_lightning.py" "$source_dir/"
 if [[ -d "$run_dir/.hydra" ]]; then
     cp -a "$run_dir/.hydra" "$source_dir/previous_hydra"
@@ -36,5 +37,5 @@ export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}"
 export MKL_NUM_THREADS="${MKL_NUM_THREADS:-4}"
 export PYTHONUNBUFFERED=1 HYDRA_FULL_ERROR=1 WANDB_MODE=offline
 cd "$source_dir"
-"$python_bin" -u model_train.py --config-name train_config_h200_qat \
+"$python_bin" -u model_train.py --config-name "$train_config" \
     "hydra.run.dir=$run_dir" "${resume_args[@]}" "$@"
