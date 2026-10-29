@@ -27,7 +27,7 @@ def check():
                 raise ValueError('Emulation support file checksum mismatch: '+support)
     manifest = json.loads((ROOT/'rtl_vp/manifest.json').read_text())
     listed = (ROOT/'rtl_vp/files.f').read_text().splitlines()
-    actual = {str(p.relative_to(ROOT)) for p in (ROOT/'rtl_vp').glob('*.vp')}
+    actual = {str(p.relative_to(ROOT)) for p in (ROOT/'rtl_vp').rglob('*.vp')}
     if len(actual) != 30 or set(listed) != actual or set(manifest['sha256']) != actual:
         raise ValueError('Expected exactly 30 protected modules in list and manifest')
     forbidden = {'.v', '.vhd', '.vhdl', '.lic', '.dcp', '.edf', '.edn', '.bit', '.xo', '.xclbin', '.rpt', '.log', '.jou', '.pb'}

@@ -16,7 +16,7 @@ def main():
     parser.add_argument('--data-width', type=int, choices=[32, 64, 128, 256, 512], default=32)
     parser.add_argument('--waves', action='store_true', help='Record internal signals to waves.wdb')
     args = parser.parse_args()
-    fixture = ROOT / 'hardware/fixtures/smoke'
+    fixture = ROOT / 'hardware/sim/fixtures/smoke'
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     sources = [ROOT / p for p in (ROOT / 'rtl_vp/files.f').read_text().splitlines() if p.strip()]
@@ -35,7 +35,7 @@ def main():
     for source in fixture.iterdir():
         if source.is_file():
             shutil.copy2(source, output / source.name)
-    benches = [ROOT / 'hardware/tb/fiaccel_public_tb.sv', ROOT / 'hardware/tb/memory_model.sv']
+    benches = [ROOT / 'hardware/sim/tb/fiaccel_public_tb.sv', ROOT / 'hardware/sim/tb/memory_model.sv']
     simulation = [tools['xsim'], 'fiaccel_public', '-runall']
     if args.waves:
         script = output/'waves.tcl'

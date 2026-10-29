@@ -6,9 +6,9 @@
 from typing import List, Optional, Sequence, Union
 
 import torchvision
-from datamodules.video_data_api import VimeoDataset
-from datamodules.Vimeo90kSeptuplet import Vimeo90kSeptuplet
-from datamodules.Vimeo90kTriplet import Vimeo90kTriplet
+from training.data.video_data_api import VimeoDataset
+from training.data.Vimeo90kSeptuplet import Vimeo90kSeptuplet
+from training.data.Vimeo90kTriplet import Vimeo90kTriplet
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader, default_collate
 from torchvision.transforms import (

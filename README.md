@@ -1,6 +1,6 @@
 # FIACCEL
 
-[![FIACCEL RTL architecture](fig/fiaccel_rtl_top.svg)](docs/architecture.md)
+[![FIACCEL RTL architecture](docs/assets/fiaccel_rtl_top.svg)](docs/architecture.md)
 
 **Memory Efficient Frame Interpolation Accelerator for Full-HD Video**<br>
 Min Wu Jeong · Chae Eun Rhee | Inha University | IEEE TCAS-II, 2024
@@ -24,9 +24,9 @@ the video run produced **120 output frames from 60 input frames**.
 <details>
 <summary>Vivado top schematic</summary>
 
-<a href="fig/fiaccel_vivado_top.svg"><img src="fig/fiaccel_vivado_top.svg" width="900" alt="Vivado RTL schematic of the FIACCEL top-level wrapper"></a>
+<a href="docs/assets/fiaccel_vivado_top.svg"><img src="docs/assets/fiaccel_vivado_top.svg" width="900" alt="Vivado RTL schematic of the FIACCEL top-level wrapper"></a>
 
-[Core integration schematic](fig/fiaccel_vivado_core.svg) · [View details](docs/architecture.md#vivado-rtl-schematics)
+[Core integration schematic](docs/assets/fiaccel_vivado_core.svg) · [View details](docs/architecture.md#vivado-rtl-schematics)
 
 </details>
 
@@ -90,13 +90,14 @@ This demo checks functionality; see the [RTL guide](hardware/README.md) for scop
 
 | Path | Contents |
 |---|---|
-| `rtl_vp/` | Encrypted RTL and checksums |
-| `hardware/` | AXI testbench, fixtures and simulator runner |
+| `rtl_vp/` | Encrypted RTL grouped by core, AXI, network, memory, PE, FIFO and synthesis |
+| `hardware/sim/`, `hardware/u200/` | AXI simulation and U200 board/emulation images |
 | `sw/` | U200 XRT host and video I/O |
 | `weights/u200_int8/`, `media/` | Trained integer model and board demo |
-| `reference_papers/` | Reference papers |
-| `model/`, `model_pipeline.py` | Network, selective transfer and image synthesis |
-| `config/`, `datamodules/`, `model_train.py` | Training |
+| `model/` | Network, selective transfer, synthesis and hardware QAT |
+| `training/` | Trainer, datasets, configuration and launch scripts |
+| `docs/` | Architecture, guides, figures and reference papers |
+| `tests/` | Model and training regression tests |
 
 <details>
 <summary>Citation</summary>

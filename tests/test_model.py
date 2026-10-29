@@ -13,7 +13,7 @@ import torch
 from torch import nn
 from model.flow_estimation import flow_estimation, flow_estimation_int
 from model.selective_transfer import SelectiveTransfer
-from model_pipeline import FIACCELPipeline
+from model.pipeline import FIACCELPipeline
 
 torch.set_num_threads(2)
 

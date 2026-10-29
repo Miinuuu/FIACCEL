@@ -8,10 +8,10 @@ from omegaconf import OmegaConf
 import torch
 from torch.nn import functional as F
 
-from datamodules.video_data_api import VideoDataset
+from training.data.video_data_api import VideoDataset
 from model.flow_estimation import flow_estimation_int
-from model_lightning import FIACCELModule
-from model_pipeline import FIACCELPipeline
+from training.lightning import FIACCELModule
+from model.pipeline import FIACCELPipeline
 
 
 class TrainingTests(unittest.TestCase):

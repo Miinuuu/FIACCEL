@@ -17,5 +17,5 @@ the CC BY 3.0 attribution above.
 [`demo_preview.gif`](demo_preview.gif) is a looping 960×540, 15 fps,
 six-second excerpt for the project README. Use the MP4 for full 60 fps playback.
 
-The U200 installation photo in `fig/alveo_u200.jpeg` is separate from the
+The U200 installation photo in `docs/assets/alveo_u200.jpeg` is separate from the
 film footage and appears in the [board guide](../hardware/u200/README.md).
