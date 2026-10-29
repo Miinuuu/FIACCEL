@@ -45,3 +45,26 @@ infer missing scales.
 and expected-output fixtures from an exported model for the
 [deployment bundle](../deploy/README.md). It uses the persistent selective-transfer
 representatives when generating expected frames.
+
+## Generate a board fixture
+
+```bash
+ffmpeg -i input_1080p.mp4 -frames:v 3 -pix_fmt rgb24 -f rawvideo build/input.rgb
+python3 sw/verification/make_board_fixture.py \
+  --model weights/u200_int8 --input build/input.rgb \
+  --output build/reference_fixture
+```
+
+The input must already be 1920×1080. Three input frames produce six expected
+output frames, including a repeated last frame to preserve duration.
+The generated fixture can be passed to `u200_model.py pack --fixture`.
+
+Run the independent convolution, transpose-kernel, quantization and warp checks
+in a PyTorch environment:
+
+```bash
+python3 -m unittest discover -s tests -p test_qat_mapping.py -v
+```
+
+Checkpoint files and datasets are supplied separately. The published
+`weights/u200_int8/` is sufficient for board inference without either.

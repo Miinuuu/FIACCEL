@@ -28,7 +28,6 @@ def main():
         p.error("--samples must be positive")
     import numpy as np
     import torch
-    from PIL import Image
     torch.set_num_threads(1)
     sys.path.append(str(args.model_root.resolve()))
     from model.hardware_qat import HardwareFlow, HardwarePipeline
@@ -56,6 +55,7 @@ def main():
             configuration_records=records)
         report = dict(result="PASS", weights=records-12, shifts=12)
         if args.rtl_fixture:
+            from PIL import Image
             pipeline.reset_stream()
             heads, pixels = [], []
             hook = flow.output.register_forward_hook(lambda m, a, result: heads.append(result.detach().long()))

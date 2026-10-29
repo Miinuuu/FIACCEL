@@ -134,3 +134,20 @@ it does not measure learned interpolation quality.
 
 See the [weight export and mapping guide](../sw/verification/README.md) for
 hardware-QAT checkpoint export, legacy Brevitas scale mapping and board fixtures.
+
+### Local paths
+
+The research profiles contain example server paths. Override the dataset,
+checkpoint directory and run directory for a local training run:
+
+```bash
+python3 -m training.train --config-name train_config_int ngpu=1 \
+  datamodule.data_dir=/path/to/vimeo_triplet \
+  checkpoint.callback.dirpath="$PWD/build/training/checkpoints" \
+  hydra.run.dir="$PWD/build/training/run"
+```
+
+Hardware-QAT fine-tuning additionally needs an initialization state. Generate it
+with `training/scripts/prepare_hardware_qat.py`, then override
+`flow_estimation.initial_state=/path/to/initial_state.pt`. The initialization
+script verifies that the supplied mapped integer weights and shifts are retained.
