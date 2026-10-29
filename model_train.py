@@ -12,14 +12,41 @@ from omegaconf import DictConfig
 from pytorch_lightning import LightningDataModule, Trainer, seed_everything
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from pytorch_lightning.loggers.wandb import WandbLogger
+from pytorch_lightning.loggers import CSVLogger
 from torch import Tensor
 from torchvision.utils import make_grid
 from utils.hydra_tools import OmegaConf
 import numpy as np
 import os
+import time
 #os.environ["TORCH_CPP_LOG_LEVEL"]="INFO"
 #os.environ["TORCH_DISTRIBUTED_DEBUG"] = "DETAIL"
 #os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+
+class TrainingStatusCallback(pl.Callback):
+    """Keep detached training logs readable without a terminal progress bar."""
+
+    def on_train_start(self, trainer, pl_module):
+        self.started_at = time.monotonic()
+
+    def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
+        step = trainer.global_step
+        if trainer.is_global_zero and step % trainer.log_every_n_steps == 0:
+            loss = trainer.callback_metrics.get("l1_loss", float("nan"))
+            psnr = trainer.callback_metrics.get("PSNR", float("nan"))
+            lr = trainer.optimizers[0].param_groups[0]["lr"]
+            print(f"step={step} l1_loss={float(loss):.6f} PSNR={float(psnr):.3f} "
+                  f"lr={lr:.6g} elapsed_s={time.monotonic()-self.started_at:.1f}", flush=True)
+
+    def on_validation_start(self, trainer, pl_module):
+        self.validation_started_at = time.monotonic()
+
+    def on_validation_end(self, trainer, pl_module):
+        if trainer.is_global_zero and not trainer.sanity_checking:
+            psnr = trainer.callback_metrics.get("val_PSNR", float("nan"))
+            print(f"validation step={trainer.global_step} val_PSNR={float(psnr):.3f} "
+                  f"validation_s={time.monotonic()-self.validation_started_at:.1f}", flush=True)
+
 
 class WandbImageCallback(pl.Callback):
     """
@@ -58,7 +85,10 @@ class WandbImageCallback(pl.Callback):
             "image2": make_grid(batch.video_tensor[idx,2,...], nrow=7),
         }
 
+    @torch.no_grad()
     def on_validation_end(self, trainer, pl_module: pl.LightningModule):
+        if not trainer.is_global_zero or trainer.sanity_checking:
+            return
         self.log_images(
             trainer,
             "train_images",
@@ -81,14 +111,14 @@ def build_image_logger(data_module: LightningDataModule):
     return WandbImageCallback(train_sample, val_sample)  # type: ignore
 
 
-@hydra.main(config_path="config", config_name="train_config_float")
+@hydra.main(version_base="1.3", config_path="config", config_name="train_config_float")
 def main(cfg: DictConfig) -> None:
     if cfg.get("seed"):
         seed_everything(cfg.seed, workers=True)
 
     ######################################################################################
     # Check for saved checkpoints
-    save_dir = Path.cwd().absolute() / cfg.folder_dir
+    save_dir = Path(cfg.checkpoint.callback.dirpath).expanduser().absolute()
     save_dir.mkdir(exist_ok=True, parents=True)
 
     if (
@@ -106,6 +136,8 @@ def main(cfg: DictConfig) -> None:
    
     if last_checkpoint.exists() and cfg.checkpoint.resume_training:
         print(f"Resuming training from last checkpoint = {last_checkpoint}.")
+    elif cfg.checkpoint.resume_training:
+        raise FileNotFoundError(f"Resume checkpoint not found: {last_checkpoint}")
     else:
         print(f"Initialising new model.")
         last_checkpoint = None
@@ -144,8 +176,9 @@ def main(cfg: DictConfig) -> None:
     image_logger = build_image_logger(datamodule)
     trainer = Trainer(
         **cfg.trainer,
-        logger=wandb_logger,
+        logger=[wandb_logger, CSVLogger(save_dir=str(Path.cwd() / "csv_logs"), name="metrics")],
         callbacks=[
+            TrainingStatusCallback(),
             image_logger,  # LogPredictionsCallback()
             LearningRateMonitor(),
             ModelCheckpoint(**cfg.checkpoint.callback),

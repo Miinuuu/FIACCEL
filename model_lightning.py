@@ -8,7 +8,7 @@ from datamodules.video_data_api import VideoData
 from model_pipeline import FIACCELPipeline
 from omegaconf import DictConfig
 from torch import Tensor
-from torchmetrics.functional import peak_signal_noise_ratio
+from torchmetrics.functional.image import peak_signal_noise_ratio
 from utils.hydra_tools import OmegaConf  # ! Needed for resolvets to take effect
 from model.loss import LapLoss
 
@@ -27,69 +27,62 @@ class FIACCELModule(pytorch_lightning.LightningModule):
         )
         self.laploss = LapLoss()
         self.L1_loss = nn.L1Loss()
+        self.metrics_every_n_steps = int(
+            getattr(cfg.training_loop, "metrics_every_n_steps", 1)
+        )
+        if self.metrics_every_n_steps < 1:
+            raise ValueError("metrics_every_n_steps must be positive")
     def forward(self, batch: VideoData) -> Tensor:
         return self.model(batch)
 
     def training_step(
-        self, batch, batch_idx: int, optimizer_idx: Optional[int] = None
+        self, batch, batch_idx: int
     ) -> Tensor:
-        pred = self(batch)  # [B, T, 3, H, W], [Tensor]
-        
-        imgs=batch.video_tensor
-        B, T, C, H, W = imgs.shape
-        img0,gt,img1 = imgs[:, 0,...],imgs[:,1,...],imgs[:, 2,...]
-
-        laploss = (self.laploss(pred, gt.to(device=pred.device))).mean()
-        mse_loss = F.mse_loss(pred, gt, reduction="none").mean()
-        l1_loss = self.L1_loss(pred,gt).mean()
-        with torch.no_grad():
-            psnr = peak_signal_noise_ratio(
-                pred, gt, data_range=1.0, dim=(1, 2, 3)
-            ).item()
-            psnr_int = peak_signal_noise_ratio(
-                (pred * 255 + 0.5).to(torch.uint8),
-                (gt * 255 + 0.5).to(torch.uint8),
-                data_range=255,
-                dim=(1, 2, 3),
-            ).item()
-        self.log_dict(
-            {
-                "mse_loss": mse_loss,
-                "l1_loss": l1_loss,
-                "laploss": laploss,
-                "PSNR": psnr,
-                "PSNR_int": psnr_int,
-            },
-            sync_dist=True,prog_bar=True
-        )
+        pred = self(batch)
+        gt = batch.video_tensor[:, 1]
+        l1_loss = self.L1_loss(pred, gt)
+        # Only L1 contributes gradients. Compute diagnostics at logging steps,
+        # without building an unused Laplacian loss graph or syncing every step.
+        if (self.global_step + 1) % self.metrics_every_n_steps == 0:
+            with torch.no_grad():
+                self.log_dict(
+                    {
+                        "mse_loss": F.mse_loss(pred, gt),
+                        "l1_loss": l1_loss.detach(),
+                        "laploss": self.laploss(pred, gt),
+                        "PSNR": peak_signal_noise_ratio(
+                            pred, gt, data_range=1.0, dim=(1, 2, 3)
+                        ),
+                        "PSNR_int": peak_signal_noise_ratio(
+                            (pred * 255 + 0.5).to(torch.uint8),
+                            (gt * 255 + 0.5).to(torch.uint8),
+                            data_range=255, dim=(1, 2, 3),
+                        ),
+                    },
+                    sync_dist=True, on_step=True, on_epoch=False,
+                    batch_size=gt.shape[0],
+                )
         return l1_loss
-        return laploss
-        return mse_loss
 
     def validation_step(self, batch, batch_idx) -> None:
-        pred = self(batch)  # [B, T, 3, H, W], [Tensor]
-        imgs=batch.video_tensor
-        B, T, C, H, W = imgs.shape
-        img0,gt,img1 = imgs[:, 0,...],imgs[:,1,...],imgs[:, 2,...]
-
-        mse_loss = F.mse_loss(
-            pred, gt, reduction="none"
-        ).mean()
+        pred = self(batch)
+        gt = batch.video_tensor[:, 1]
 
         self.log_dict(
             {
-                "mse_loss": mse_loss.mean().item(),
+                "mse_loss": F.mse_loss(pred, gt),
                 "val_PSNR": peak_signal_noise_ratio(
                     pred, gt, data_range=1.0, dim=(1, 2, 3)
-                ).item(),
+                ),
                 "val_PSNR_int": peak_signal_noise_ratio(
                     (pred * 255 + 0.5).to(torch.uint8),
                     (gt * 255 + 0.5).to(torch.uint8),
                     data_range=255,
                     dim=(1, 2, 3),
-                ).item(),
+                ),
             },
-            sync_dist=True,prog_bar=True
+            sync_dist=True, on_step=False, on_epoch=True,
+            batch_size=gt.shape[0],
         )
 
     def test_step(

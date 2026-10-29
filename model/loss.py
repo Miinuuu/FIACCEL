@@ -20,13 +20,13 @@ def downsample(x):
     return x[:, :, ::2, ::2]
 
 def upsample(x):
-    cc = torch.cat([x, torch.zeros(x.shape[0], x.shape[1], x.shape[2], x.shape[3]).to(device)], dim=3)
+    cc = torch.cat([x, torch.zeros_like(x)], dim=3)
     cc = cc.view(x.shape[0], x.shape[1], x.shape[2]*2, x.shape[3])
     cc = cc.permute(0,1,3,2)
-    cc = torch.cat([cc, torch.zeros(x.shape[0], x.shape[1], x.shape[3], x.shape[2]*2).to(device)], dim=3)
+    cc = torch.cat([cc, x.new_zeros(x.shape[0], x.shape[1], x.shape[3], x.shape[2]*2)], dim=3)
     cc = cc.view(x.shape[0], x.shape[1], x.shape[3]*2, x.shape[2]*2)
     x_up = cc.permute(0,1,3,2)
-    return conv_gauss(x_up, 4*gauss_kernel(channels=x.shape[1]))
+    return conv_gauss(x_up, 4*gauss_kernel(channels=x.shape[1]).to(x))
 
 def conv_gauss(img, kernel):
     img = torch.nn.functional.pad(img, (2, 2, 2, 2), mode='reflect')

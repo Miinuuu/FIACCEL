@@ -1,0 +1,45 @@
+# INT8 QAT on H200, with run-local logs and checkpoints.
+defaults:
+  - train_config_int
+  - _self_
+
+ngpu: 2
+num_workers_per_task: 10
+folder_dir: ${hydra:runtime.output_dir}/checkpoints_int
+
+training_loop:
+  train_batch_size: 16
+  lr_annealing_frequency: 2000
+  metrics_every_n_steps: 100
+  val_batch_size: 32
+
+checkpoint:
+  overwrite: false
+  callback:
+    dirpath: ${folder_dir}
+    every_n_train_steps: 0
+    every_n_epochs: 1
+    save_on_train_epoch_end: false
+
+trainer:
+  strategy: ddp_find_unused_parameters_false
+  max_epochs: 10
+  precision: 32-true
+  enable_progress_bar: false
+  val_check_interval: 1.0
+  check_val_every_n_epoch: 1
+  benchmark: true
+
+logger:
+  offline: true
+  group: h200_qat
+
+datamodule:
+  data_dir: /data/jmw/vimeo_triplet
+  persistent_workers: true
+
+hydra:
+  run:
+    dir: /data/jmw/fiaccel/runs/qat_${now:%Y%m%d_%H%M%S}
+  job:
+    chdir: true
