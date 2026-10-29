@@ -7,18 +7,24 @@ import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
-DEVICE_IMAGE = 'hardware/u200/prebuilt/FIACCEL.xclbin'
-DEVICE_IMAGE_SHA256 = '27bbf5cc8098762fab3396f54c55d26a38a7b618f70b14f7fc37963051d78bda'
+APPROVED_IMAGES = {
+    'hardware/u200/prebuilt/FIACCEL.xclbin': '27bbf5cc8098762fab3396f54c55d26a38a7b618f70b14f7fc37963051d78bda',
+    'hardware/u200/hw_emu/FIACCEL.xclbin': 'bdaaa446d2dee1c3dbfeb0dbfdfdb6f9121d92f62e4421a8e7e588fec3a19b28',
+}
 
 
 def check():
-    image = ROOT/DEVICE_IMAGE
-    image_manifest = json.loads(image.with_name('manifest.json').read_text())
-    if (hashlib.sha256(image.read_bytes()).hexdigest() != DEVICE_IMAGE_SHA256 or
-            image_manifest['sha256'] != DEVICE_IMAGE_SHA256 or
-            image_manifest['bytes'] != image.stat().st_size or
-            image_manifest['file'] != image.name):
-        raise ValueError('Prebuilt U200 image checksum/manifest mismatch')
+    for name, digest in APPROVED_IMAGES.items():
+        image = ROOT/name
+        image_manifest = json.loads(image.with_name('manifest.json').read_text())
+        if (hashlib.sha256(image.read_bytes()).hexdigest() != digest or
+                image_manifest['sha256'] != digest or
+                image_manifest['bytes'] != image.stat().st_size or
+                image_manifest['file'] != image.name):
+            raise ValueError('Prebuilt image checksum/manifest mismatch: '+name)
+        for support, checksum in image_manifest.get('support_files', {}).items():
+            if support not in ('emconfig.json', 'xrt.ini') or hashlib.sha256(image.with_name(support).read_bytes()).hexdigest() != checksum:
+                raise ValueError('Emulation support file checksum mismatch: '+support)
     manifest = json.loads((ROOT/'rtl_vp/manifest.json').read_text())
     listed = (ROOT/'rtl_vp/files.f').read_text().splitlines()
     actual = {str(p.relative_to(ROOT)) for p in (ROOT/'rtl_vp').glob('*.vp')}
@@ -27,7 +33,7 @@ def check():
     forbidden = {'.v', '.vhd', '.vhdl', '.lic', '.dcp', '.edf', '.edn', '.bit', '.xo', '.xclbin', '.rpt', '.log', '.jou', '.pb'}
     for folder in ('rtl_vp', 'hardware'):
         for path in (ROOT/folder).rglob('*'):
-            if path.is_file() and path.suffix.lower() in forbidden and str(path.relative_to(ROOT)) != DEVICE_IMAGE:
+            if path.is_file() and path.suffix.lower() in forbidden and str(path.relative_to(ROOT)) not in APPROVED_IMAGES:
                 raise ValueError('Private/generated artifact in public package: '+str(path.relative_to(ROOT)))
     for name in listed:
         path = ROOT/name
@@ -49,9 +55,9 @@ def check():
     for name in filter(None, tracked):
         if not (ROOT/name).is_file():
             continue
-        if name != DEVICE_IMAGE and (name.startswith('rtl/') or Path(name).suffix.lower() in forbidden):
+        if name not in APPROVED_IMAGES and (name.startswith('rtl/') or Path(name).suffix.lower() in forbidden):
             raise ValueError('Tracked private/generated artifact: '+name)
-    print('PASS: 30 encrypted modules; simulation-only rights; approved U200 image checksum; no other private hardware artifacts')
+    print('PASS: 30 encrypted modules; simulation-only rights; approved U200/hw_emu image checksums; no other private hardware artifacts')
 
 
 if __name__ == '__main__':

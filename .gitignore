@@ -26,6 +26,7 @@ rtl/
 *.bit
 *.xclbin
 !/hardware/u200/prebuilt/FIACCEL.xclbin
+!/hardware/u200/hw_emu/FIACCEL.xclbin
 *.xo
 *.lic
 *.rpt

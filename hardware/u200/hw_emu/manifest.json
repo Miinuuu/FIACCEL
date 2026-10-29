@@ -1,0 +1,21 @@
+{
+  "format": "fiaccel-u200-hw-emu-v1",
+  "file": "FIACCEL.xclbin",
+  "bytes": 14775255,
+  "sha256": "bdaaa446d2dee1c3dbfeb0dbfdfdb6f9121d92f62e4421a8e7e588fec3a19b28",
+  "support_files": {
+    "emconfig.json": "7727bef9631a1e2c61e7617e426a285ba13f8c80ef201d05184c74c6fe95c83b",
+    "xrt.ini": "2cdf1a63637eb823d8c7c59eb7e24953aa3145b07c219dc26f378bf3f24cbb7a"
+  },
+  "target": "hw_emu",
+  "toolchain": "Vitis / Vivado 2024.2",
+  "platform": "xilinx_u200_gen3x16_xdma_2_202110_1",
+  "kernel_clock_mhz": 300,
+  "rtl_source_fingerprint_sha256": "4629a2fcf110696f65dbceaa57cff03affcc3021cbe9a4c4f18d26406cf6d61c",
+  "validation": {
+    "result": "PASS",
+    "scope": "Configuration/control/m00 AXI smoke in a clean relocated execution directory",
+    "kernel_command_cycles": 24
+  },
+  "packaging": "Compiled simulator runtime; intermediate source/object files and compilation logs removed"
+}
